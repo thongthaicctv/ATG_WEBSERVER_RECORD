@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Video Ecom</h1>
+
+{% if db_error %}
+<div class="alert-error">Lỗi database: {{ db_error }}</div>
+{% endif %}
+
+<form method="get" class="search-box">
+    <input type="text" name="keyword" placeholder="Mã đơn" value="{{ keyword }}">
+    <input type="text" name="employee" placeholder="Nhân viên" value="{{ employee }}">
+    <input type="text" name="camera_id" placeholder="Camera ID" value="{{ camera_id }}">
+    <input type="date" name="date_from" value="{{ date_from }}">
+    <input type="date" name="date_to" value="{{ date_to }}">
+    <button type="submit">Tìm kiếm</button>
+    <a href="/video/ecom/" class="btn-gray">Xóa lọc</a>
+</form>
+
+<table>
+    <thead>
+        <tr>
+            <th>Thời gian</th>
+            <th>Mã đơn</th>
+            <th>Box</th>
+            <th>Scanner</th>
+            <th>Camera</th>
+            <th>Nhân viên</th>
+            <th>File</th>
+            <th>Dung lượng</th>
+            <th>Thời lượng</th>
+            <th>Thao tác</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for v in videos %}
+        <tr>
+            <td>{{ v.start_time or v.created_at }}</td>
+            <td><b>{{ v.order_code }}</b></td>
+            <td>{{ v.box_code or "" }}</td>
+            <td>{{ v.scanner_id or "" }}</td>
+            <td>{{ v.camera_id }} - {{ v.camera_name or "" }}</td>
+            <td>{{ v.employee_name or v.employee_code or "" }}</td>
+            <td>{{ v.file_name or "" }}</td>
+            <td>{{ ((v.file_size or 0) // 1024 // 1024) }} MB</td>
+            <td>{{ v.duration_seconds or 0 }} giây</td>
+            <td>
+                <a class="btn" target="_blank" href="/video/play/{{ v.id }}">Xem</a>
+                <a class="btn-green" href="/video/download/{{ v.id }}">Tải</a>
+            </td>
+        </tr>
+    {% else %}
+        <tr>
+            <td colspan="10" class="empty">Không có dữ liệu</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

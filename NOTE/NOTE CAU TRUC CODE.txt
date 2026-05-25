@@ -1,0 +1,50 @@
+ATG_WEBSERVER/
+│
+├─ app.py
+├─ webserver_config.json
+├─ requirements.txt
+│
+├─ core/
+│   ├─ __init__.py
+│   ├─ path_utils.py
+│   └─ config_manager.py
+│
+├─ db/
+│   ├─ __init__.py
+│   └─ mysql_client.py
+│
+├─ routes/
+│   ├─ __init__.py
+│   ├─ dashboard_routes.py
+│   ├─ video_routes.py
+│   ├─ video_ecom_routes.py
+│   ├─ video_wholesale_routes.py
+│   ├─ shipping_routes.py
+│   ├─ report_routes.py
+│   └─ settings_routes.py
+│
+├─ services/
+│   ├─ __init__.py
+│   └─ windows_startup.py
+│
+├─ templates/
+│   ├─ base.html
+│   ├─ dashboard.html
+│   │
+│   ├─ video/
+│   │   ├─ ecom.html
+│   │   └─ wholesale.html
+│   │
+│   ├─ shipping/
+│   │   └─ index.html
+│   │
+│   ├─ reports/
+│   │   └─ index.html
+│   │
+│   └─ settings/
+│       ├─ database.html
+│       └─ startup.html
+│
+└─ static/
+    └─ css/
+        └─ style.css

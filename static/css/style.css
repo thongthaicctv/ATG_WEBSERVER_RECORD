@@ -1,0 +1,282 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, "Segoe UI", sans-serif;
+    background: #f4f6f9;
+    color: #222;
+}
+
+.layout {
+    display: flex;
+    min-height: 100vh;
+}
+
+.sidebar {
+    width: 230px;
+    background: #0b2545;
+    color: white;
+    flex-shrink: 0;
+}
+
+.brand {
+    padding: 18px;
+    font-size: 20px;
+    font-weight: bold;
+    background: #081a30;
+    text-align: center;
+    letter-spacing: 1px;
+}
+
+.sidebar nav {
+    display: flex;
+    flex-direction: column;
+    padding: 12px;
+}
+
+.sidebar nav a {
+    color: white;
+    text-decoration: none;
+    padding: 11px 14px;
+    margin-bottom: 6px;
+    border-radius: 8px;
+    background: transparent;
+}
+
+.sidebar nav a:hover {
+    background: #1c4f86;
+}
+
+.content {
+    flex: 1;
+    padding: 22px;
+    overflow-x: auto;
+}
+
+h1 {
+    margin-top: 0;
+    color: #0b2545;
+}
+
+h2 {
+    margin-top: 22px;
+    color: #0b2545;
+}
+
+.cards {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(180px, 1fr));
+    gap: 16px;
+    margin-bottom: 20px;
+}
+
+.card,
+.panel {
+    background: white;
+    padding: 18px;
+    border-radius: 14px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+}
+
+.card h3 {
+    margin-top: 0;
+    color: #555;
+}
+
+.number {
+    font-size: 34px;
+    font-weight: bold;
+    color: #0b5ed7;
+}
+
+.number.danger {
+    color: #dc3545;
+}
+
+.search-box {
+    background: white;
+    padding: 12px;
+    margin-bottom: 16px;
+    border-radius: 12px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+input,
+select {
+    padding: 9px 10px;
+    border: 1px solid #ccd3dd;
+    border-radius: 7px;
+    min-width: 150px;
+}
+
+button,
+.btn,
+.btn-green,
+.btn-gray {
+    display: inline-block;
+    padding: 8px 12px;
+    border-radius: 7px;
+    border: none;
+    cursor: pointer;
+    text-decoration: none;
+    color: white;
+    background: #0b5ed7;
+    font-size: 14px;
+}
+
+.btn-green {
+    background: #198754;
+}
+
+.btn-gray {
+    background: #6c757d;
+}
+
+button:hover,
+.btn:hover,
+.btn-green:hover,
+.btn-gray:hover {
+    opacity: 0.9;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+th {
+    background: #0b5ed7;
+    color: white;
+    padding: 10px;
+    text-align: center;
+    white-space: nowrap;
+}
+
+td {
+    padding: 9px;
+    border-bottom: 1px solid #e5e7eb;
+    text-align: center;
+    vertical-align: middle;
+}
+
+tr:hover {
+    background: #f1f7ff;
+}
+
+.empty {
+    text-align: center;
+    color: #777;
+    padding: 24px;
+}
+
+.path-cell {
+    max-width: 420px;
+    word-break: break-all;
+    text-align: left;
+    font-size: 12px;
+}
+
+.alert-error {
+    background: #ffe6e6;
+    color: #9b1c1c;
+    border-left: 5px solid #dc3545;
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 14px;
+}
+
+.alert-success {
+    background: #e8fff0;
+    color: #146c43;
+    border-left: 5px solid #198754;
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 14px;
+}
+
+.settings-form {
+    background: white;
+    padding: 18px;
+    border-radius: 14px;
+    max-width: 720px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+}
+
+.settings-form label {
+    display: block;
+    margin-top: 10px;
+    font-weight: bold;
+}
+
+.settings-form input[type="text"],
+.settings-form input[type="password"],
+.settings-form input[type="number"] {
+    width: 100%;
+    margin-top: 5px;
+}
+
+.check-line {
+    font-weight: normal !important;
+}
+
+.check-line input {
+    min-width: auto;
+}
+
+.form-actions {
+    margin-top: 18px;
+    display: flex;
+    gap: 8px;
+}
+
+.green-text {
+    color: green;
+}
+
+.red-text {
+    color: red;
+}
+
+.note {
+    color: #666;
+}
+.copy-link-box {
+    margin-top: 14px;
+    padding: 12px;
+    background: #f1f7ff;
+    border: 1px solid #cfe2ff;
+    border-radius: 10px;
+}
+
+.copy-link-row {
+    display: flex;
+    gap: 8px;
+    margin-top: 6px;
+}
+
+.copy-link-row input {
+    flex: 1;
+    background: #fff;
+    font-weight: bold;
+    color: #0b5ed7;
+}
+
+.copy-link-row button {
+    min-width: 110px;
+    background: #198754;
+}
+
+.hint {
+    margin-top: 6px;
+    font-size: 13px;
+    color: #666;
+}

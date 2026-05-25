@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>ATG WEBINDEX / WEBSERVER</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+
+<div class="layout">
+    <aside class="sidebar">
+        <div class="brand">
+            ATG WEBSERVER
+        </div>
+
+        <nav>
+            <a href="/">Dashboard</a>
+            <a href="/video/ecom/">Video Ecom</a>
+            <a href="/video/wholesale/">Video Sỉ</a>
+            <a href="/shipping/">Vận chuyển</a>
+            <a href="/reports/">Báo cáo</a>
+            <a href="/settings/database">Cài đặt WebServer</a>
+            <a href="/settings/startup">Tự khởi động Windows</a>
+        </nav>
+    </aside>
+
+    <main class="content">
+        {% block content %}{% endblock %}
+    </main>
+</div>
+
+</body>
+</html>

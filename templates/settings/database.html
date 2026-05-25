@@ -1,0 +1,151 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Cài đặt WebServer</h1>
+
+{% if message %}
+<div class="alert-success">{{ message }}</div>
+{% endif %}
+
+<form method="post" class="settings-form">
+
+    <h2>Database MySQL/MariaDB</h2>
+
+    <label>DB Host</label>
+    <input type="text" name="db_host" value="{{ cfg.database.host }}">
+
+    <label>DB Port</label>
+    <input type="number" name="db_port" value="{{ cfg.database.port }}">
+
+    <label>DB User</label>
+    <input type="text" name="db_user" value="{{ cfg.database.user }}">
+
+    <label>DB Password</label>
+    <input type="password" name="db_password" value="{{ cfg.database.password }}">
+
+    <label>Database Name</label>
+    <input type="text" name="db_name" value="{{ cfg.database.database }}">
+
+    <h2>WebServer</h2>
+
+    <label>Host chạy WebServer</label>
+    <input type="text" id="web_host" name="web_host" value="{{ cfg.app.host }}">
+
+    <label>Port</label>
+    <input type="number" id="web_port" name="web_port" value="{{ cfg.app.port }}">
+
+    <label>DDNS / Link public nếu có</label>
+    <input type="text" id="public_host" name="public_host" value="{{ cfg.app.public_host or '' }}" placeholder="Ví dụ: suabap.camera-ddns.net">
+
+    <div class="copy-link-box">
+        <label>Link truy cập WebServer</label>
+
+        <div class="copy-link-row">
+            <input type="text" id="web_link" readonly value="">
+            <button type="button" onclick="copyWebLink()">Copy link</button>
+        </div>
+
+        <div class="hint">
+            Host chạy server nên để 0.0.0.0. DDNS chỉ dùng để tạo link truy cập.
+        </div>
+    </div>
+
+    <label class="check-line">
+        <input type="checkbox" name="allow_play" {% if cfg.video.allow_play %}checked{% endif %}>
+        Cho phép xem video
+    </label>
+
+    <label class="check-line">
+        <input type="checkbox" name="allow_download" {% if cfg.video.allow_download %}checked{% endif %}>
+        Cho phép tải video
+    </label>
+
+    <h2>Bảo mật</h2>
+
+    <label class="check-line">
+        <input type="checkbox" name="require_login" {% if cfg.security.require_login %}checked{% endif %}>
+        Bắt đăng nhập
+    </label>
+
+    <label>Username</label>
+    <input type="text" name="username" value="{{ cfg.security.username }}">
+
+    <label>Password</label>
+    <input type="password" name="password" value="{{ cfg.security.password }}">
+
+    <div class="form-actions">
+        <button type="submit">Lưu cấu hình</button>
+        <a href="/settings/test-db" target="_blank" class="btn-gray">Test Database</a>
+    </div>
+
+</form>
+
+<script>
+function cleanHost(host) {
+    host = host.trim();
+    host = host.replace("http://", "");
+    host = host.replace("https://", "");
+    host = host.replace(/\/+$/, "");
+    return host;
+}
+
+function updateWebLink() {
+    const hostInput = document.getElementById("web_host");
+    const publicHostInput = document.getElementById("public_host");
+    const portInput = document.getElementById("web_port");
+    const linkInput = document.getElementById("web_link");
+
+    if (!hostInput || !portInput || !linkInput) {
+        return;
+    }
+
+    let host = "";
+    let port = portInput.value.trim() || "8088";
+
+    if (publicHostInput && publicHostInput.value.trim()) {
+        host = cleanHost(publicHostInput.value);
+    } else {
+        host = cleanHost(hostInput.value);
+
+        if (!host || host === "0.0.0.0") {
+            host = window.location.hostname || "127.0.0.1";
+        }
+    }
+
+    linkInput.value = "http://" + host + ":" + port;
+}
+
+function copyWebLink() {
+    updateWebLink();
+
+    const linkInput = document.getElementById("web_link");
+    const link = linkInput.value;
+
+    linkInput.focus();
+    linkInput.select();
+    linkInput.setSelectionRange(0, 99999);
+
+    try {
+        document.execCommand("copy");
+        alert("Đã copy link: " + link);
+    } catch (e) {
+        alert("Không copy tự động được. Hãy copy thủ công: " + link);
+    }
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+    updateWebLink();
+
+    const ids = ["web_host", "public_host", "web_port"];
+
+    ids.forEach(function(id) {
+        const el = document.getElementById(id);
+        if (el) {
+            el.addEventListener("input", updateWebLink);
+            el.addEventListener("change", updateWebLink);
+        }
+    });
+});
+</script>
+
+{% endblock %}

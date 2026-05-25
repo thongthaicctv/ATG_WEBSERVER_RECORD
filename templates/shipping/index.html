@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Update vận chuyển</h1>
+
+{% if db_error %}
+<div class="alert-error">Lỗi database: {{ db_error }}</div>
+{% endif %}
+
+<form method="get" class="search-box">
+    <input type="text" name="keyword" placeholder="Mã đơn / mã vận đơn / khách hàng" value="{{ keyword }}">
+    <input type="text" name="status" placeholder="Trạng thái" value="{{ status }}">
+    <button type="submit">Tìm kiếm</button>
+    <a href="/shipping/" class="btn-gray">Xóa lọc</a>
+</form>
+
+<div class="panel">
+    <h2>Cập nhật vận chuyển thủ công</h2>
+    <form method="post" action="/shipping/update" class="search-box">
+        <input type="text" name="order_code" placeholder="Mã đơn" required>
+        <input type="text" name="carrier_code" placeholder="Mã đơn vị VC">
+        <input type="text" name="carrier_name" placeholder="Tên đơn vị VC">
+        <input type="text" name="tracking_code" placeholder="Mã vận đơn">
+        <input type="text" name="shipping_status" placeholder="Trạng thái">
+        <button type="submit">Cập nhật</button>
+    </form>
+</div>
+
+<table>
+    <thead>
+        <tr>
+            <th>Mã đơn</th>
+            <th>Đơn vị VC</th>
+            <th>Mã vận đơn</th>
+            <th>Trạng thái</th>
+            <th>Raw status</th>
+            <th>Sự kiện cuối</th>
+            <th>Bàn giao</th>
+            <th>Cập nhật</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for r in rows %}
+        <tr>
+            <td><b>{{ r.order_code }}</b></td>
+            <td>{{ r.carrier_name or r.carrier_code or "" }}</td>
+            <td>{{ r.tracking_code or "" }}</td>
+            <td>{{ r.shipping_status or "" }}</td>
+            <td>{{ r.raw_last_status or "" }}</td>
+            <td>{{ r.last_shipping_event_at or "" }}</td>
+            <td>{{ r.last_handover_at or "" }}</td>
+            <td>{{ r.updated_at or "" }}</td>
+        </tr>
+    {% else %}
+        <tr>
+            <td colspan="8" class="empty">Không có dữ liệu</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

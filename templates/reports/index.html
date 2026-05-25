@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Báo cáo</h1>
+
+{% if db_error %}
+<div class="alert-error">Lỗi database: {{ db_error }}</div>
+{% endif %}
+
+<form method="get" class="search-box">
+    <select name="type">
+        <option value="employee" {% if report_type == "employee" %}selected{% endif %}>
+            Báo cáo nhân viên
+        </option>
+        <option value="missing_video" {% if report_type == "missing_video" %}selected{% endif %}>
+            Video lỗi / thiếu file
+        </option>
+    </select>
+
+    <input type="date" name="date_from" value="{{ date_from }}">
+    <input type="date" name="date_to" value="{{ date_to }}">
+    <button type="submit">Xem báo cáo</button>
+</form>
+
+<table>
+    <thead>
+    {% if report_type == "missing_video" %}
+        <tr>
+            <th>ID</th>
+            <th>Mã đơn</th>
+            <th>Camera</th>
+            <th>File path</th>
+            <th>Dung lượng</th>
+            <th>Thời lượng</th>
+            <th>Ngày tạo</th>
+        </tr>
+    {% else %}
+        <tr>
+            <th>Ngày</th>
+            <th>Mã NV</th>
+            <th>Nhân viên</th>
+            <th>Tổng đơn</th>
+            <th>Tổng video</th>
+            <th>Tổng thời lượng</th>
+        </tr>
+    {% endif %}
+    </thead>
+
+    <tbody>
+    {% for r in rows %}
+        {% if report_type == "missing_video" %}
+        <tr>
+            <td>{{ r.id }}</td>
+            <td><b>{{ r.order_code }}</b></td>
+            <td>{{ r.camera_id }} - {{ r.camera_name or "" }}</td>
+            <td class="path-cell">{{ r.file_path or "" }}</td>
+            <td>{{ r.file_size or 0 }}</td>
+            <td>{{ r.duration_seconds or 0 }}</td>
+            <td>{{ r.created_at }}</td>
+        </tr>
+        {% else %}
+        <tr>
+            <td>{{ r.work_date }}</td>
+            <td>{{ r.employee_code or "" }}</td>
+            <td>{{ r.employee_name or "" }}</td>
+            <td>{{ r.total_orders or 0 }}</td>
+            <td>{{ r.total_videos or 0 }}</td>
+            <td>{{ r.total_duration_seconds or 0 }} giây</td>
+        </tr>
+        {% endif %}
+    {% else %}
+        <tr>
+            <td colspan="7" class="empty">Không có dữ liệu</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

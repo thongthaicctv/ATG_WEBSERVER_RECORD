@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Tự khởi động Windows</h1>
+
+{% if message %}
+<div class="alert-success">{{ message }}</div>
+{% endif %}
+
+<div class="panel">
+    <p>
+        Trạng thái hiện tại:
+        {% if startup_enabled %}
+            <b class="green-text">Đang bật</b>
+        {% else %}
+            <b class="red-text">Đang tắt</b>
+        {% endif %}
+    </p>
+
+    <form method="post">
+        <label class="check-line">
+            <input type="checkbox" name="auto_start_with_windows"
+                   {% if startup_enabled %}checked{% endif %}>
+            Tự khởi động ATG_WEBSERVER cùng Windows
+        </label>
+
+        <br>
+
+        <label class="check-line">
+            <input type="checkbox" name="start_minimized"
+                   {% if cfg.startup.start_minimized %}checked{% endif %}>
+            Chạy thu nhỏ khi khởi động
+        </label>
+
+        <br><br>
+
+        <button type="submit">Lưu cài đặt</button>
+    </form>
+</div>
+{% endblock %}
