@@ -1,0 +1,157 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Chi tiết đơn hàng: {{ order_code }}</h1>
+
+{% if db_error %}
+<div class="alert-error">
+    Lỗi database: {{ db_error }}
+</div>
+{% endif %}
+
+<div class="panel">
+    <h2>Thông tin đơn hàng</h2>
+
+    {% if order %}
+    <div class="detail-grid">
+        <div><b>Mã đơn:</b> {{ order.order_code }}</div>
+        <div><b>Loại đơn:</b> {{ order.order_type or "" }}</div>
+        <div><b>Khách hàng:</b> {{ order.customer_name or "" }}</div>
+        <div><b>SĐT:</b> {{ order.customer_phone or "" }}</div>
+        <div><b>Trạng thái:</b> {{ order.order_status or "" }}</div>
+        <div><b>Ngày tạo:</b> {{ order.created_at or "" }}</div>
+    </div>
+    {% else %}
+    <p>Không có thông tin trong bảng orders. Đang hiển thị theo dữ liệu video.</p>
+    {% endif %}
+</div>
+
+<div class="panel">
+    <h2>Phiên đóng hàng</h2>
+
+    <table>
+        <thead>
+            <tr>
+                <th>ID phiên</th>
+                <th>Loại phiên</th>
+                <th>Scanner</th>
+                <th>Nhân viên</th>
+                <th>Bắt đầu</th>
+                <th>Kết thúc</th>
+                <th>Trạng thái</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for s in sessions %}
+            <tr>
+                <td>{{ s.id }}</td>
+                <td>{{ s.session_type or "" }}</td>
+                <td>{{ s.scanner_id or "" }}</td>
+                <td>{{ s.employee_name or s.employee_code or "" }}</td>
+                <td>{{ s.start_time or "" }}</td>
+                <td>{{ s.end_time or "" }}</td>
+                <td>{{ s.status or "" }}</td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="7" class="empty">Không có dữ liệu phiên đóng hàng</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<div class="panel">
+    <h2>Danh sách video của đơn</h2>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Trạng thái file</th>
+                <th>Thời gian</th>
+                <th>Loại</th>
+                <th>Box</th>
+                <th>Scanner</th>
+                <th>Camera</th>
+                <th>Nhân viên</th>
+                <th>File</th>
+                <th>Dung lượng</th>
+                <th>Thời lượng</th>
+                <th>Thao tác</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for v in videos %}
+            <tr>
+                <td>
+                    {% if v.file_exists %}
+                        <span class="badge-ok">OK</span>
+                    {% else %}
+                        <span class="badge-error">Mất file</span>
+                    {% endif %}
+                </td>
+
+                <td>{{ v.start_time or v.created_at }}</td>
+                <td>{{ v.session_type or v.video_type or "" }}</td>
+                <td>{{ v.box_code or "" }}</td>
+                <td>{{ v.scanner_id or "" }}</td>
+                <td>{{ v.camera_id }} - {{ v.camera_name or "" }}</td>
+                <td>{{ v.employee_name or v.employee_code or "" }}</td>
+                <td class="path-cell">{{ v.file_name or v.file_path or "" }}</td>
+                <td>{{ ((v.file_size or 0) // 1024 // 1024) }} MB</td>
+                <td>{{ v.duration_seconds or 0 }} giây</td>
+                <td>
+                    {% if v.file_exists %}
+                        <a class="btn" target="_blank" href="/video/play/{{ v.id }}">Xem</a>
+                        <a class="btn-green" href="/video/download/{{ v.id }}">Tải</a>
+                        <button type="button" class="btn-gray" onclick="copyVideoLink({{ v.id }})">Copy</button>
+                    {% else %}
+                        <span class="red-text">Không khả dụng</span>
+                    {% endif %}
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="11" class="empty">Không có video cho đơn này</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<script>
+function copyText(text) {
+    const tempInput = document.createElement("input");
+    tempInput.value = text;
+    document.body.appendChild(tempInput);
+    tempInput.select();
+    tempInput.setSelectionRange(0, 99999);
+
+    try {
+        document.execCommand("copy");
+        alert("Đã copy link: " + text);
+    } catch (e) {
+        alert("Không copy được. Link là: " + text);
+    }
+
+    document.body.removeChild(tempInput);
+}
+
+function copyVideoLink(videoId) {
+    fetch("/video/link/" + videoId)
+        .then(response => response.json())
+        .then(data => {
+            if (data.ok && data.link) {
+                copyText(data.link);
+            } else {
+                alert("Không tạo được link video.");
+            }
+        })
+        .catch(() => {
+            const fallbackLink = window.location.origin + "/video/play/" + videoId;
+            copyText(fallbackLink);
+        });
+}
+</script>
+
+{% endblock %}

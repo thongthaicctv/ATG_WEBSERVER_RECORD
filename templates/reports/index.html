@@ -8,71 +8,225 @@
 {% endif %}
 
 <form method="get" class="search-box">
-    <select name="type">
+    <select name="type" id="report_type" onchange="toggleReportFilters()">
         <option value="employee" {% if report_type == "employee" %}selected{% endif %}>
             Báo cáo nhân viên
         </option>
+
+        <option value="video" {% if report_type == "video" %}selected{% endif %}>
+            Báo cáo video
+        </option>
+
+        <option value="order_status" {% if report_type == "order_status" %}selected{% endif %}>
+            Báo cáo trạng thái đơn
+        </option>
+
         <option value="missing_video" {% if report_type == "missing_video" %}selected{% endif %}>
-            Video lỗi / thiếu file
+            Video lỗi / thiếu file DB
         </option>
     </select>
 
     <input type="date" name="date_from" value="{{ date_from }}">
     <input type="date" name="date_to" value="{{ date_to }}">
+
+    <select name="session_type" id="session_type_filter">
+        <option value="">Tất cả loại video</option>
+        <option value="ecom" {% if session_type == "ecom" %}selected{% endif %}>Ecom</option>
+        <option value="wholesale" {% if session_type == "wholesale" %}selected{% endif %}>Sỉ</option>
+    </select>
+
+    <input type="text" name="packing_status" id="packing_status_filter" placeholder="Trạng thái đóng hàng" value="{{ packing_status }}">
+    <input type="text" name="shipping_status" id="shipping_status_filter" placeholder="Trạng thái vận chuyển" value="{{ shipping_status }}">
+
     <button type="submit">Xem báo cáo</button>
+
+    <a class="btn-green"
+       href="/reports/export?type={{ report_type }}&date_from={{ date_from }}&date_to={{ date_to }}&session_type={{ session_type }}&packing_status={{ packing_status }}&shipping_status={{ shipping_status }}">
+        Xuất Excel
+    </a>
 </form>
 
-<table>
-    <thead>
-    {% if report_type == "missing_video" %}
-        <tr>
-            <th>ID</th>
-            <th>Mã đơn</th>
-            <th>Camera</th>
-            <th>File path</th>
-            <th>Dung lượng</th>
-            <th>Thời lượng</th>
-            <th>Ngày tạo</th>
-        </tr>
-    {% else %}
-        <tr>
-            <th>Ngày</th>
-            <th>Mã NV</th>
-            <th>Nhân viên</th>
-            <th>Tổng đơn</th>
-            <th>Tổng video</th>
-            <th>Tổng thời lượng</th>
-        </tr>
-    {% endif %}
-    </thead>
+{% if report_type == "missing_video" %}
+    <h2>Video lỗi / thiếu file trong database</h2>
 
-    <tbody>
-    {% for r in rows %}
-        {% if report_type == "missing_video" %}
-        <tr>
-            <td>{{ r.id }}</td>
-            <td><b>{{ r.order_code }}</b></td>
-            <td>{{ r.camera_id }} - {{ r.camera_name or "" }}</td>
-            <td class="path-cell">{{ r.file_path or "" }}</td>
-            <td>{{ r.file_size or 0 }}</td>
-            <td>{{ r.duration_seconds or 0 }}</td>
-            <td>{{ r.created_at }}</td>
-        </tr>
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Mã đơn</th>
+                <th>Camera</th>
+                <th>File path</th>
+                <th>Dung lượng</th>
+                <th>Thời lượng</th>
+                <th>Ngày tạo</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for r in rows %}
+            <tr>
+                <td>{{ r.id }}</td>
+                <td>
+                    <a class="order-link" href="/order/{{ r.order_code }}">
+                        <b>{{ r.order_code }}</b>
+                    </a>
+                </td>
+                <td>{{ r.camera_id }} - {{ r.camera_name or "" }}</td>
+                <td class="path-cell">{{ r.file_path or "" }}</td>
+                <td>{{ r.file_size or 0 }}</td>
+                <td>{{ r.duration_seconds or 0 }}</td>
+                <td>{{ r.created_at }}</td>
+            </tr>
         {% else %}
-        <tr>
-            <td>{{ r.work_date }}</td>
-            <td>{{ r.employee_code or "" }}</td>
-            <td>{{ r.employee_name or "" }}</td>
-            <td>{{ r.total_orders or 0 }}</td>
-            <td>{{ r.total_videos or 0 }}</td>
-            <td>{{ r.total_duration_seconds or 0 }} giây</td>
-        </tr>
-        {% endif %}
-    {% else %}
-        <tr>
-            <td colspan="7" class="empty">Không có dữ liệu</td>
-        </tr>
-    {% endfor %}
-    </tbody>
-</table>
+            <tr>
+                <td colspan="7" class="empty">Không có dữ liệu</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+{% elif report_type == "video" %}
+    <h2>Báo cáo video</h2>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Thời gian</th>
+                <th>Mã đơn</th>
+                <th>Loại</th>
+                <th>Scanner</th>
+                <th>Camera</th>
+                <th>Nhân viên</th>
+                <th>File</th>
+                <th>Dung lượng</th>
+                <th>Thời lượng</th>
+                <th>Kết quả</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for r in rows %}
+            <tr>
+                <td>{{ r.start_time or r.created_at }}</td>
+                <td>
+                    <a class="order-link" href="/order/{{ r.order_code }}">
+                        <b>{{ r.order_code }}</b>
+                    </a>
+                </td>
+                <td>{{ r.session_type or r.video_type or "" }}</td>
+                <td>{{ r.scanner_id or "" }}</td>
+                <td>{{ r.camera_id }} - {{ r.camera_name or "" }}</td>
+                <td>{{ r.employee_name or r.employee_code or "" }}</td>
+                <td>{{ r.file_name or "" }}</td>
+                <td>{{ ((r.file_size or 0) // 1024 // 1024) }} MB</td>
+                <td>{{ r.duration_seconds or 0 }} giây</td>
+                <td>{{ r.result or "" }}</td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="10" class="empty">Không có dữ liệu</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+{% elif report_type == "order_status" %}
+    <h2>Báo cáo trạng thái đơn hàng</h2>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Mã đơn</th>
+                <th>Loại</th>
+                <th>Khách hàng</th>
+                <th>SĐT</th>
+                <th>Số video</th>
+                <th>Đóng hàng</th>
+                <th>Băng truyền</th>
+                <th>Vận chuyển</th>
+                <th>Mã vận đơn</th>
+                <th>Cập nhật</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for r in rows %}
+            <tr>
+                <td>
+                    <a class="order-link" href="/order/{{ r.order_code }}">
+                        <b>{{ r.order_code }}</b>
+                    </a>
+                </td>
+                <td>{{ r.order_type or "" }}</td>
+                <td>{{ r.customer_name or "" }}</td>
+                <td>{{ r.customer_phone or "" }}</td>
+                <td>{{ r.video_count or 0 }}</td>
+                <td>{{ r.packing_status or "" }}</td>
+                <td>{{ r.conveyor_status or "" }}</td>
+                <td>{{ r.shipping_status or "" }}</td>
+                <td>{{ r.tracking_code or "" }}</td>
+                <td>{{ r.updated_at or "" }}</td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="10" class="empty">Không có dữ liệu</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+{% else %}
+    <h2>Báo cáo nhân viên</h2>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Ngày</th>
+                <th>Mã NV</th>
+                <th>Nhân viên</th>
+                <th>Tổng đơn</th>
+                <th>Tổng video</th>
+                <th>Tổng thời lượng</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for r in rows %}
+            <tr>
+                <td>{{ r.work_date }}</td>
+                <td>{{ r.employee_code or "" }}</td>
+                <td>{{ r.employee_name or "" }}</td>
+                <td>{{ r.total_orders or 0 }}</td>
+                <td>{{ r.total_videos or 0 }}</td>
+                <td>{{ r.total_duration_seconds or 0 }} giây</td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="6" class="empty">Không có dữ liệu</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endif %}
+
+<script>
+function toggleReportFilters() {
+    const type = document.getElementById("report_type").value;
+
+    const sessionType = document.getElementById("session_type_filter");
+    const packingStatus = document.getElementById("packing_status_filter");
+    const shippingStatus = document.getElementById("shipping_status_filter");
+
+    if (sessionType) {
+        sessionType.style.display = type === "video" ? "inline-block" : "none";
+    }
+
+    if (packingStatus) {
+        packingStatus.style.display = type === "order_status" ? "inline-block" : "none";
+    }
+
+    if (shippingStatus) {
+        shippingStatus.style.display = type === "order_status" ? "inline-block" : "none";
+    }
+}
+
+document.addEventListener("DOMContentLoaded", toggleReportFilters);
+</script>
+
 {% endblock %}

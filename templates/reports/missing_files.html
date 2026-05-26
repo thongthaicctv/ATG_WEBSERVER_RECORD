@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Báo cáo video mất file trên ổ cứng</h1>
+
+<a class="btn-green" href="/reports/missing-files/export">
+    Xuất Excel
+</a>
+
+<br><br>
+
+{% if db_error %}
+<div class="alert-error">Lỗi database: {{ db_error }}</div>
+{% endif %}
+
+<div class="panel">
+    <p>
+        Báo cáo này kiểm tra các dòng có <b>file_path</b> trong database nhưng file thực tế không còn tồn tại trên ổ cứng.
+    </p>
+</div>
+
+<table>
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Mã đơn</th>
+            <th>Camera</th>
+            <th>File</th>
+            <th>Đường dẫn</th>
+            <th>Dung lượng DB</th>
+            <th>Thời lượng</th>
+            <th>Ngày tạo</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for r in rows %}
+        <tr>
+            <td>{{ r.id }}</td>
+            <td>
+                <a class="order-link" href="/order/{{ r.order_code }}">
+                    <b>{{ r.order_code }}</b>
+                </a>
+            </td>
+            <td>{{ r.camera_id }} - {{ r.camera_name or "" }}</td>
+            <td>{{ r.file_name or "" }}</td>
+            <td class="path-cell">{{ r.file_path or "" }}</td>
+            <td>{{ ((r.file_size or 0) // 1024 // 1024) }} MB</td>
+            <td>{{ r.duration_seconds or 0 }} giây</td>
+            <td>{{ r.created_at }}</td>
+        </tr>
+    {% else %}
+        <tr>
+            <td colspan="8" class="empty">Không phát hiện file bị mất</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}

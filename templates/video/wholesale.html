@@ -37,7 +37,11 @@
     {% for v in videos %}
         <tr>
             <td>{{ v.start_time or v.created_at }}</td>
-            <td><b>{{ v.order_code }}</b></td>
+            <td>
+                <a class="order-link" href="/order/{{ v.order_code }}">
+                    <b>{{ v.order_code }}</b>
+                </a>
+            </td>
             <td>{{ v.box_code or "" }}</td>
             <td>{{ v.scanner_id or "" }}</td>
             <td>{{ v.camera_id }} - {{ v.camera_name or "" }}</td>

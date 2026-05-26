@@ -4,10 +4,12 @@
 import mimetypes
 from pathlib import Path
 
-from flask import Blueprint, send_file, abort
+
 
 from core.config_manager import load_config
 from db.mysql_client import fetch_one
+
+from flask import Blueprint, send_file, abort, jsonify, request
 
 
 video_bp = Blueprint("video", __name__)
@@ -86,3 +88,23 @@ def download_video(video_id):
         as_attachment=True,
         download_name=video.get("file_name") or path.name,
     )
+
+@video_bp.route("/link/<int:video_id>")
+def get_video_link(video_id):
+    cfg = load_config()
+    app_cfg = cfg.get("app", {})
+
+    public_host = app_cfg.get("public_host", "").strip()
+    port = int(app_cfg.get("port", 8088))
+
+    if public_host:
+        public_host = public_host.replace("http://", "").replace("https://", "").strip("/")
+        link = f"http://{public_host}:{port}/video/play/{video_id}"
+    else:
+        link = request.host_url.rstrip("/") + f"/video/play/{video_id}"
+
+    return jsonify({
+        "ok": True,
+        "video_id": video_id,
+        "link": link
+    })

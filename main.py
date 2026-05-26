@@ -14,12 +14,15 @@ from routes.shipping_routes import shipping_bp
 from routes.report_routes import report_bp
 from routes.settings_routes import settings_bp
 
+from routes.order_routes import order_bp
+
 
 def create_app():
     app = Flask(__name__)
     app.secret_key = "ATG_WEBSERVER_SECRET_KEY"
 
     app.register_blueprint(dashboard_bp)
+    app.register_blueprint(order_bp)
     app.register_blueprint(video_bp, url_prefix="/video")
     app.register_blueprint(video_ecom_bp, url_prefix="/video/ecom")
     app.register_blueprint(video_wholesale_bp, url_prefix="/video/wholesale")
@@ -28,7 +31,6 @@ def create_app():
     app.register_blueprint(settings_bp, url_prefix="/settings")
 
     return app
-
 
 if __name__ == "__main__":
     cfg = load_config()

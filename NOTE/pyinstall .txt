@@ -1,0 +1,11 @@
+pyinstaller app.py ^
+  --name ATG_WEBSERVER ^
+  --onedir ^
+  --noconfirm ^
+  --clean ^
+  --hidden-import win32com ^
+  --hidden-import win32com.client ^
+  --hidden-import pythoncom ^
+  --hidden-import openpyxl ^
+  --add-data "templates;templates" ^
+  --add-data "static;static"
