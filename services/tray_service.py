@@ -1,0 +1,246 @@
+# services/tray_service.py
+# -*- coding: utf-8 -*-
+
+import os
+import sys
+import threading
+import webbrowser
+from pathlib import Path
+
+
+APP_NAME = "ATG WEBSERVER"
+MENU_OPEN_ID = 1001
+MENU_EXIT_ID = 1002
+
+
+def resource_root() -> Path:
+    if getattr(sys, "frozen", False):
+        return Path(sys._MEIPASS)
+    return Path(__file__).resolve().parent.parent
+
+
+def icon_path() -> Path:
+    bundled_icon = resource_root() / "icon.ico"
+    if bundled_icon.exists():
+        return bundled_icon
+
+    external_icon = Path(sys.executable).resolve().parent / "icon.ico"
+    if external_icon.exists():
+        return external_icon
+
+    return bundled_icon
+
+
+def start_tray_icon(host, port, public_host=""):
+    if os.name != "nt":
+        return None
+
+    thread = threading.Thread(
+        target=_run_tray_icon,
+        args=(host, int(port), public_host or ""),
+        daemon=True,
+    )
+    thread.start()
+    return thread
+
+
+def _open_webserver(port):
+    webbrowser.open(f"http://127.0.0.1:{port}")
+
+
+def _run_tray_icon(host, port, public_host):
+    try:
+        import win32api
+        import win32con
+        import win32gui
+    except Exception as exc:
+        print(f"TRAY INIT WARNING: {exc}")
+        return
+
+    message_id = win32con.WM_USER + 20
+    left_click_timer_id = 1
+    class_name = "ATG_WEBSERVER_TRAY"
+
+    def window_proc(hwnd, msg, wparam, lparam):
+        if msg == message_id:
+            if lparam == win32con.WM_LBUTTONDBLCLK:
+                try:
+                    win32gui.KillTimer(hwnd, left_click_timer_id)
+                except Exception:
+                    pass
+                _open_webserver(port)
+            elif lparam == win32con.WM_LBUTTONUP:
+                win32gui.SetTimer(hwnd, left_click_timer_id, 250, None)
+            elif lparam in (
+                win32con.WM_RBUTTONDOWN,
+                win32con.WM_RBUTTONUP,
+                win32con.WM_CONTEXTMENU,
+                win32con.WM_USER,
+                win32con.WM_USER + 1,
+            ):
+                _show_menu(hwnd, win32gui, win32con, port)
+            return True
+
+        if msg == win32con.WM_COMMAND:
+            command_id = int(wparam) & 0xFFFF
+            if command_id == MENU_OPEN_ID:
+                _open_webserver(port)
+                return True
+            if command_id == MENU_EXIT_ID:
+                _exit_app(hwnd, win32gui)
+                return True
+
+        if msg == win32con.WM_TIMER and wparam == left_click_timer_id:
+            win32gui.KillTimer(hwnd, left_click_timer_id)
+            _show_menu(hwnd, win32gui, win32con, port)
+            return True
+
+        if msg == win32con.WM_DESTROY:
+            _remove_icon(hwnd, win32gui)
+            win32gui.PostQuitMessage(0)
+            return True
+
+        return win32gui.DefWindowProc(hwnd, msg, wparam, lparam)
+
+    wc = win32gui.WNDCLASS()
+    wc.hInstance = win32api.GetModuleHandle(None)
+    wc.lpszClassName = class_name
+    wc.lpfnWndProc = window_proc
+
+    try:
+        win32gui.RegisterClass(wc)
+    except Exception:
+        pass
+
+    hwnd = win32gui.CreateWindow(
+        class_name,
+        APP_NAME,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        wc.hInstance,
+        None,
+    )
+
+    hicon = _load_icon(win32gui, win32con)
+    tooltip = f"{APP_NAME} - http://127.0.0.1:{port}"
+    _add_icon(hwnd, hicon, tooltip, message_id, win32gui)
+
+    public_text = f"http://{public_host}:{port}" if public_host else f"http://127.0.0.1:{port}"
+    _show_balloon(hwnd, hicon, tooltip, message_id, public_text, win32gui)
+
+    win32gui.PumpMessages()
+
+
+def _load_icon(win32gui, win32con):
+    path = icon_path()
+    if path.exists():
+        return win32gui.LoadImage(
+            0,
+            str(path),
+            win32con.IMAGE_ICON,
+            0,
+            0,
+            win32con.LR_LOADFROMFILE | win32con.LR_DEFAULTSIZE,
+        )
+
+    return win32gui.LoadIcon(0, win32con.IDI_APPLICATION)
+
+
+def _add_icon(hwnd, hicon, tooltip, message_id, win32gui):
+    flags = win32gui.NIF_ICON | win32gui.NIF_MESSAGE | win32gui.NIF_TIP
+    nid = (hwnd, 0, flags, message_id, hicon, tooltip)
+    win32gui.Shell_NotifyIcon(win32gui.NIM_ADD, nid)
+
+
+def _show_balloon(hwnd, hicon, tooltip, message_id, public_text, win32gui):
+    flags = (
+        win32gui.NIF_ICON
+        | win32gui.NIF_MESSAGE
+        | win32gui.NIF_TIP
+        | win32gui.NIF_INFO
+    )
+    info = "WebServer đang chạy"
+    info_title = APP_NAME
+    nid = (
+        hwnd,
+        0,
+        flags,
+        message_id,
+        hicon,
+        tooltip,
+        info,
+        10,
+        info_title,
+        win32gui.NIIF_INFO,
+    )
+    win32gui.Shell_NotifyIcon(win32gui.NIM_MODIFY, nid)
+    print(f"{info}: {public_text}")
+
+
+def _remove_icon(hwnd, win32gui):
+    try:
+        win32gui.Shell_NotifyIcon(win32gui.NIM_DELETE, (hwnd, 0))
+    except Exception:
+        pass
+
+
+def _show_menu(hwnd, win32gui, win32con, port):
+    menu = win32gui.CreatePopupMenu()
+
+    win32gui.AppendMenu(menu, win32con.MF_STRING, MENU_OPEN_ID, "Mo WebServer")
+    win32gui.AppendMenu(menu, win32con.MF_SEPARATOR, 0, None)
+    win32gui.AppendMenu(menu, win32con.MF_STRING, MENU_EXIT_ID, "Exit WebServer")
+
+    pos = win32gui.GetCursorPos()
+    try:
+        win32gui.SetForegroundWindow(hwnd)
+    except Exception:
+        pass
+
+    command = win32gui.TrackPopupMenu(
+        menu,
+        win32con.TPM_LEFTALIGN
+        | win32con.TPM_RETURNCMD
+        | win32con.TPM_LEFTBUTTON
+        | win32con.TPM_RIGHTBUTTON,
+        pos[0],
+        pos[1],
+        0,
+        hwnd,
+        None,
+    )
+    win32gui.PostMessage(hwnd, win32con.WM_NULL, 0, 0)
+    win32gui.DestroyMenu(menu)
+
+    if command == MENU_OPEN_ID:
+        _open_webserver(port)
+    elif command == MENU_EXIT_ID:
+        _exit_app(hwnd, win32gui)
+
+
+def _exit_app(hwnd, win32gui):
+    _remove_icon(hwnd, win32gui)
+    try:
+        win32gui.DestroyWindow(hwnd)
+    except Exception:
+        pass
+
+    try:
+        import win32api
+        import win32con
+
+        handle = win32api.OpenProcess(
+            win32con.PROCESS_TERMINATE,
+            False,
+            os.getpid(),
+        )
+        win32api.TerminateProcess(handle, 0)
+    except Exception:
+        pass
+
+    os._exit(0)

@@ -31,6 +31,8 @@ def database_settings():
         cfg["app"]["port"] = int(request.form.get("web_port", "8088").strip())
         cfg["app"]["public_host"] = request.form.get("public_host", "").strip()
 
+        cfg.setdefault("video", {})
+        cfg["video"]["storage_root"] = request.form.get("storage_root", "").strip()
         cfg["video"]["allow_play"] = bool(request.form.get("allow_play"))
         cfg["video"]["allow_download"] = bool(request.form.get("allow_download"))
 

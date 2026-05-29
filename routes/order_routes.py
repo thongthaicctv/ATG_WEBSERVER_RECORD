@@ -1,21 +1,26 @@
 # routes/order_routes.py
 # -*- coding: utf-8 -*-
 
-from pathlib import Path
 from flask import Blueprint, render_template, abort
 
+from core.video_path_resolver import video_file_exists
 from db.mysql_client import fetch_one, fetch_all
 
 
 order_bp = Blueprint("orders", __name__)
 
 
-def file_exists(file_path):
+def file_exists(video):
+    file_path = video.get("file_path") if isinstance(video, dict) else video
     if not file_path:
         return False
 
     try:
-        return Path(file_path).exists()
+        return video_file_exists(
+            file_path,
+            storage_code=video.get("storage_code") if isinstance(video, dict) else None,
+            relative_path=video.get("relative_path") if isinstance(video, dict) else None,
+        )
     except Exception:
         return False
 
@@ -80,7 +85,7 @@ def order_detail(order_code):
         )
 
         for v in videos:
-            v["file_exists"] = file_exists(v.get("file_path"))
+            v["file_exists"] = file_exists(v)
 
     except Exception as e:
         db_error = str(e)

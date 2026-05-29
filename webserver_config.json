@@ -1,34 +1,5 @@
 {
-  "app": {
-    "name": "ATG_WEBSERVER",
-    "host": "0.0.0.0",
-    "port": 8088,
-    "public_host": "",
-    "debug": false
-  },
-  "database": {
-    "host": "127.0.0.1",
-    "port": 3306,
-    "user": "atg_app",
-    "password": "atg_password",
-    "database": "atg_order_system",
-    "charset": "utf8mb4"
-  },
-  "video": {
-    "allow_play": true,
-    "allow_download": true
-  },
-  "security": {
-    "require_login": true,
-    "username": "admin",
-    "password": "123456"
-  },
-  "startup": {
-    "auto_start_with_windows": false,
-    "startup_mode": "shortcut",
-    "start_minimized": true
-  },
-  "system": {
-    "log_file": "logs/webserver.log"
-  }
+  "marker": "ATG_ENCRYPTED_CONFIG_V1",
+  "method": "dpapi-current-user",
+  "data": "AQAAANCMnd8BFdERjHoAwE/Cl+sBAAAAQ4NYTIHCUUWihK8bybBragAAAAAqAAAAQQBUAEcAXwBXAEUAQgBTAEUAUgBWAEUAUgBfAEMATwBOAEYASQBHAAAAEGYAAAABAAAgAAAAvdt65MCPnxCVOoeLlNOgQk42npZ9FT+qFNO9IFMTQPgAAAAADoAAAAACAAAgAAAAalXYCQjCeu4psxCErNUOegLxEMXaQ+IXnZ6seRGnfocgAgAA2iX6NxyJGMVj+PrtDPL3gqBHxH0oFVcF+nMIE/XaVh6hjO2Ls6vKRFfpaG19Viy4xrQjT7JVukZSloGg/xWr+Lm/SJGfbuvWuA+JXr2cINeNR4USdCgWQMIDAbgMCfIlxxGS5BHSu3cAeAMCBQcsOEbYc8N7Y40Fh9XcSIIUUefEe6mIQRV7oMDgsWv5M8wlauiLMAMX3m1l9URR2U8gt71U/Wt9Q0NL2xTJCiEj9NZrgNfwJjCiaOv/LKvTL3lR8GJNtIAqfLTwprXo8ZoiTXKq0uTdPA30ENi37Q3BGedwPmNtWxPdz+Znl9lVOMlk8kYK2cJudpxQ1m4FX5f+8r5MbqD5rec1VdA2Lan6eEaQaoI9vw8lg8IyTyG+G+/M7A0VbeD6PetULgjdFHyB36ZcpaESXV2mV3Zvzt1HNnzAMxp7EkioMRv11V2RNmZiP/H0XZjkq8C/sAji/AFkOohFRwHIWVOtSSEiUXHa0W5u82Ppk4DqtyaO3xI1T8OzSiaefecovmdN9JwspQRrr4gdgS8kfue+kyakp2a2R1/1jSAQiy/oRNcrjcDpz7xMr50H9P0rpMDrUEHJ5jPfifOmeckj9gufe7WPr0cESYxFMusF+i7QbE/uugXzsHpTtpdnc13O8os00vNgkTz25GMheL/pdM7ojHMiOMRRnq8c/klMTY8kOTIDiCcakB4wxqDAuBROVwLEA79lQ7DLDUAAAADkVcSVU6xlJDWd1RNCRmBhglK+GLyvhBlkG4X+KSMZKWgIgwc5yDxKPv8fKzv4RRod4/cLYlX/7IbknaMhqHdM"
 }

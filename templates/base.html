@@ -13,15 +13,40 @@
             ATG WEBSERVER
         </div>
 
+        {% if current_user %}
+        <div class="user-box">
+            <b>{{ current_user.username }}</b>
+            <span>{{ current_user.role }}</span>
+        </div>
+        {% endif %}
+
         <nav>
+            {% if can_access("dashboard") %}
             <a href="/">Dashboard</a>
+            {% endif %}
+
+            {% if can_access("video_view") %}
             <a href="/video/ecom/">Video Ecom</a>
             <a href="/video/wholesale/">Video Sỉ</a>
+            {% endif %}
+
+            {% if can_access("*") %}
             <a href="/shipping/">Vận chuyển</a>
+            {% endif %}
+
+            {% if can_access("reports") %}
             <a href="/reports/">Báo cáo</a>
             <a href="/reports/missing-files">Video mất file</a>
+            {% endif %}
+
+            {% if can_access("*") %}
             <a href="/settings/database">Cài đặt WebServer</a>
             <a href="/settings/startup">Tự khởi động Windows</a>
+            {% endif %}
+
+            {% if current_user %}
+            <a href="/logout">Đăng xuất</a>
+            {% endif %}
         </nav>
     </aside>
 

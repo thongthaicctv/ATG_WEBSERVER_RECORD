@@ -30,6 +30,23 @@ body {
     letter-spacing: 1px;
 }
 
+.user-box {
+    padding: 12px 18px;
+    border-bottom: 1px solid rgba(255,255,255,0.12);
+    background: #0d315c;
+}
+
+.user-box b,
+.user-box span {
+    display: block;
+}
+
+.user-box span {
+    margin-top: 3px;
+    color: #cfe2ff;
+    font-size: 13px;
+}
+
 .sidebar nav {
     display: flex;
     flex-direction: column;
@@ -314,4 +331,40 @@ tr:hover {
 
 .order-link:hover {
     text-decoration: underline;
+}
+
+.login-page {
+    min-height: 100vh;
+    display: grid;
+    place-items: center;
+    background: #f4f6f9;
+}
+
+.login-panel {
+    width: min(420px, calc(100vw - 32px));
+    background: white;
+    padding: 28px;
+    border-radius: 12px;
+    box-shadow: 0 2px 18px rgba(0,0,0,0.12);
+}
+
+.login-panel h1 {
+    text-align: center;
+    margin-bottom: 22px;
+}
+
+.login-form label {
+    display: block;
+    margin-top: 12px;
+    font-weight: bold;
+}
+
+.login-form input {
+    width: 100%;
+    margin-top: 6px;
+}
+
+.login-form button {
+    width: 100%;
+    margin-top: 18px;
 }

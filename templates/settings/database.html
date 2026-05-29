@@ -50,6 +50,12 @@
         </div>
     </div>
 
+    <label>Thư mục gốc lưu video</label>
+    <input type="text" name="storage_root" value="{{ cfg.video.storage_root or '' }}" placeholder="Ví dụ: D:\VIDEO">
+    <div class="hint">
+        Nếu database chỉ lưu đường dẫn tương đối như 2026-05-29\file.mkv, WebServer sẽ tìm file trong thư mục này.
+    </div>
+
     <label class="check-line">
         <input type="checkbox" name="allow_play" {% if cfg.video.allow_play %}checked{% endif %}>
         Cho phép xem video
