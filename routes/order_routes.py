@@ -3,6 +3,7 @@
 
 from flask import Blueprint, render_template, abort
 
+from core.config_manager import load_config
 from core.video_path_resolver import video_file_exists
 from db.mysql_client import fetch_one, fetch_all
 
@@ -10,7 +11,7 @@ from db.mysql_client import fetch_one, fetch_all
 order_bp = Blueprint("orders", __name__)
 
 
-def file_exists(video):
+def file_exists(video, cfg=None):
     file_path = video.get("file_path") if isinstance(video, dict) else video
     if not file_path:
         return False
@@ -18,6 +19,7 @@ def file_exists(video):
     try:
         return video_file_exists(
             file_path,
+            cfg=cfg,
             storage_code=video.get("storage_code") if isinstance(video, dict) else None,
             relative_path=video.get("relative_path") if isinstance(video, dict) else None,
         )
@@ -84,8 +86,9 @@ def order_detail(order_code):
             [order_code],
         )
 
+        cfg = load_config()
         for v in videos:
-            v["file_exists"] = file_exists(v)
+            v["file_exists"] = file_exists(v, cfg)
 
     except Exception as e:
         db_error = str(e)

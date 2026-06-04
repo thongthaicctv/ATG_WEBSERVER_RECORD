@@ -32,6 +32,7 @@ DEFAULT_CONFIG = {
     },
     "video": {
         "storage_root": "",
+        "storage_roots": [],
         "allow_play": True,
         "allow_download": True
     },

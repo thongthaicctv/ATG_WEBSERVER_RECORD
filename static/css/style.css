@@ -237,9 +237,16 @@ tr:hover {
 .settings-form input[type="text"],
 .settings-form input[type="password"],
 .settings-form input[type="number"],
+.settings-form textarea,
 .settings-form select {
     width: 100%;
     margin-top: 5px;
+}
+
+.settings-form textarea {
+    resize: vertical;
+    min-height: 86px;
+    line-height: 1.4;
 }
 
 .check-line {

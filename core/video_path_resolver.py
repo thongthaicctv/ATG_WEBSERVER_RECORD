@@ -2,8 +2,9 @@
 # -*- coding: utf-8 -*-
 
 import string
-from functools import lru_cache
 from pathlib import Path
+from time import monotonic
+from functools import lru_cache
 
 
 COMMON_VIDEO_ROOT_NAMES = (
@@ -14,6 +15,12 @@ COMMON_VIDEO_ROOT_NAMES = (
     "ATG_RECORD",
     "ATG_VIDEO",
 )
+
+STORAGE_LOCATION_CACHE_SECONDS = 15
+_STORAGE_LOCATION_CACHE = {
+    "loaded_at": 0.0,
+    "rows": [],
+}
 
 
 def video_path_candidates(file_path, cfg=None, storage_code=None, relative_path=None):
@@ -85,12 +92,7 @@ def _lookup_paths(file_path, relative_path=None):
 
 
 def _configured_roots(cfg, storage_code=None):
-    roots = []
-    video_cfg = cfg.get("video", {}) if isinstance(cfg, dict) else {}
-    storage_root = str(video_cfg.get("storage_root") or "").strip()
-
-    if storage_root:
-        roots.append(Path(storage_root))
+    roots = _config_video_roots(cfg)
 
     storage_rows = _storage_location_rows()
     if storage_code:
@@ -102,12 +104,37 @@ def _configured_roots(cfg, storage_code=None):
         if base_path:
             roots.append(Path(base_path))
 
-    roots.extend(_common_windows_video_roots())
+    if not roots:
+        roots.extend(_common_windows_video_roots())
+
     return _dedupe_paths(roots)
 
 
-@lru_cache(maxsize=1)
+def _config_video_roots(cfg):
+    roots = []
+    video_cfg = cfg.get("video", {}) if isinstance(cfg, dict) else {}
+
+    storage_roots = video_cfg.get("storage_roots") or []
+    if isinstance(storage_roots, str):
+        storage_roots = storage_roots.replace(";", "\n").splitlines()
+
+    for value in storage_roots:
+        root = _clean_path_value(value)
+        if root:
+            roots.append(Path(root))
+
+    storage_root = _clean_path_value(video_cfg.get("storage_root"))
+    if storage_root:
+        roots.append(Path(storage_root))
+
+    return _dedupe_paths(roots)
+
+
 def _storage_location_rows():
+    now = monotonic()
+    if now - _STORAGE_LOCATION_CACHE["loaded_at"] < STORAGE_LOCATION_CACHE_SECONDS:
+        return _STORAGE_LOCATION_CACHE["rows"]
+
     try:
         from db.mysql_client import fetch_all
 
@@ -121,14 +148,19 @@ def _storage_location_rows():
             """
         )
     except Exception:
-        return []
+        _STORAGE_LOCATION_CACHE["loaded_at"] = now
+        return _STORAGE_LOCATION_CACHE["rows"]
 
-    return [
+    result = [
         (str(row.get("storage_code") or "").strip(), str(row.get("base_path") or "").strip())
         for row in rows
     ]
+    _STORAGE_LOCATION_CACHE["loaded_at"] = now
+    _STORAGE_LOCATION_CACHE["rows"] = result
+    return result
 
 
+@lru_cache(maxsize=1)
 def _common_windows_video_roots():
     roots = []
     for letter in string.ascii_uppercase:
@@ -140,6 +172,10 @@ def _common_windows_video_roots():
             roots.append(drive / folder_name)
 
     return roots
+
+
+def _clean_path_value(value):
+    return str(value or "").strip().strip('"')
 
 
 def _portable_relative_parts(path):

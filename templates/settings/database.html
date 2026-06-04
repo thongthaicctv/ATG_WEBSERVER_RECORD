@@ -50,10 +50,11 @@
         </div>
     </div>
 
+    {% set video_roots = cfg.video.storage_roots if cfg.video.storage_roots else ([cfg.video.storage_root] if cfg.video.storage_root else []) %}
     <label>Thư mục gốc lưu video</label>
-    <input type="text" name="storage_root" value="{{ cfg.video.storage_root or '' }}" placeholder="Ví dụ: D:\VIDEO">
+    <textarea name="storage_roots" rows="4" placeholder="Ví dụ: D:\VIDEO&#10;D:\ATG_DataBackup">{{ video_roots | join('\n') }}</textarea>
     <div class="hint">
-        Nếu database chỉ lưu đường dẫn tương đối như 2026-05-29\file.mkv, WebServer sẽ tìm file trong thư mục này.
+        Nhập mỗi thư mục một dòng. Nếu database chỉ lưu đường dẫn tương đối như 2026-05-29\file.mkv, WebServer sẽ ưu tiên tìm file trong các thư mục này.
     </div>
 
     <label class="check-line">

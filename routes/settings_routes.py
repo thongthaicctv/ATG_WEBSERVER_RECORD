@@ -32,7 +32,8 @@ def database_settings():
         cfg["app"]["public_host"] = request.form.get("public_host", "").strip()
 
         cfg.setdefault("video", {})
-        cfg["video"]["storage_root"] = request.form.get("storage_root", "").strip()
+        cfg["video"]["storage_roots"] = _parse_storage_roots(request.form.get("storage_roots", ""))
+        cfg["video"]["storage_root"] = cfg["video"]["storage_roots"][0] if cfg["video"]["storage_roots"] else ""
         cfg["video"]["allow_play"] = bool(request.form.get("allow_play"))
         cfg["video"]["allow_download"] = bool(request.form.get("allow_download"))
 
@@ -52,6 +53,27 @@ def database_settings():
         cfg=cfg,
         message=message,
     )
+
+
+def _parse_storage_roots(raw_value):
+    roots = []
+    for value in str(raw_value or "").replace(";", "\n").splitlines():
+        value = value.strip().strip('"')
+        if value:
+            roots.append(value)
+    return _dedupe_strings(roots)
+
+
+def _dedupe_strings(values):
+    result = []
+    seen = set()
+    for value in values:
+        key = value.lower()
+        if key in seen:
+            continue
+        seen.add(key)
+        result.append(value)
+    return result
 
 
 @settings_bp.route("/test-db")
