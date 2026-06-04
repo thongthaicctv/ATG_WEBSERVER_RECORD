@@ -6,7 +6,7 @@ from functools import wraps
 from flask import abort, redirect, request, session, url_for
 from werkzeug.security import check_password_hash, generate_password_hash
 
-from db.mysql_client import execute, fetch_one
+from db.mysql_client import execute, fetch_all, fetch_one
 
 
 DEFAULT_USERS = [
@@ -29,6 +29,7 @@ ROLE_PERMISSIONS = {
         "video_view",
         "video_download",
         "reports",
+        "user_passwords",
     },
     "vanhanh": {
         "dashboard",
@@ -135,6 +136,56 @@ def current_user():
     }
 
 
+def list_users_for_password_change():
+    return fetch_all(
+        """
+        SELECT
+            id,
+            username,
+            employee_code,
+            employee_name,
+            role,
+            is_active,
+            last_login_at,
+            created_at,
+            updated_at
+        FROM users
+        ORDER BY
+            CASE role
+                WHEN 'root' THEN 1
+                WHEN 'admin' THEN 2
+                WHEN 'vanhanh' THEN 3
+                ELSE 9
+            END,
+            username ASC
+        """
+    )
+
+
+def get_user_by_id(user_id):
+    return fetch_one(
+        """
+        SELECT id, username, employee_code, employee_name, role, is_active
+        FROM users
+        WHERE id = %s
+        LIMIT 1
+        """,
+        [user_id],
+    )
+
+
+def update_user_password(user_id, new_password):
+    return execute(
+        """
+        UPDATE users
+        SET password_hash = %s,
+            updated_at = NOW()
+        WHERE id = %s
+        """,
+        [generate_password_hash(new_password), user_id],
+    )
+
+
 def has_permission(permission):
     user = current_user()
     if not user:
@@ -174,6 +225,9 @@ def permission_for_endpoint(endpoint):
 
     if endpoint == "video.download_video":
         return "video_download"
+
+    if endpoint == "auth.password_users":
+        return "user_passwords"
 
     if endpoint.startswith("reports."):
         return "reports"
