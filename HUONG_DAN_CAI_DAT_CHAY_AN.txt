@@ -1,0 +1,44 @@
+HUONG DAN CAI DAT ATG_WEBSERVER CHAY AN CUNG WINDOWS
+
+1. Chuan bi thu muc cai dat
+- Tao mot thu muc co dinh tren may chay WebServer, vi du:
+  D:\PYTHON-TCR\EXE\ATG_WEBSERVER
+- Copy cac file sau vao cung thu muc:
+  ATG_WEBSERVER.exe
+  webserver_config.json
+
+2. Cau hinh WebServer
+- Mo ATG_WEBSERVER.exe.
+- Dang nhap bang tai khoan root hoac admin co quyen cau hinh.
+- Vao menu Cai dat WebServer.
+- Nhap thong tin database MySQL/MariaDB.
+- Host chay WebServer nen de 0.0.0.0.
+- Port nhap port can dung, vi du 8088.
+- Neu truy cap bang DDNS, nhap ten mien vao DDNS / Link public.
+- O Thu muc goc luu video, nhap moi thu muc mot dong, vi du:
+  E:\DEBUG
+  D:\VIDEO
+  D:\ATG_DataBackup
+- Bam Luu cau hinh.
+
+3. Bat che do tu khoi dong an
+- Vao menu Tu khoi dong Windows.
+- Bat Tu khoi dong ATG_WEBSERVER cung Windows.
+- Bat Chay thu nho khi khoi dong.
+- Bam Luu cai dat.
+
+4. Kiem tra
+- Thoat app bang icon tray: click phai icon ATG_WEBSERVER, chon Exit WebServer.
+- Mo lai ATG_WEBSERVER.exe hoac restart Windows.
+- Khi chay dung, app khong hien cua so, chi co icon tray va thong bao WebServer dang chay.
+- Double click icon tray de mo WebServer.
+- Click phai icon tray de mo menu va thoat app.
+
+5. Luu y khi doi thu muc cai dat
+- Neu copy ATG_WEBSERVER.exe sang thu muc khac, phai mo lai trang Tu khoi dong Windows va bam Luu cai dat de cap nhat shortcut/registry.
+- Neu doi duong dan luu video trong phan mem record, them thu muc moi vao o Thu muc goc luu video, moi thu muc mot dong.
+
+6. Link truy cap
+- http://127.0.0.1:PORT chi dung tren chinh may dang chay WebServer.
+- May khac trong LAN dung http://IP_MAY_WEBSERVER:PORT.
+- Truy cap ngoai mang dung DDNS/public IP va can cau hinh NAT port tren router.

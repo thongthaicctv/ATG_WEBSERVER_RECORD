@@ -38,5 +38,11 @@ if errorlevel 1 (
 ) else (
     echo Da copy webserver_config.json vao dist.
 )
+copy /Y HUONG_DAN_CAI_DAT_CHAY_AN.txt dist\HUONG_DAN_CAI_DAT_CHAY_AN.txt >nul
+if errorlevel 1 (
+    echo Canh bao: khong copy duoc HUONG_DAN_CAI_DAT_CHAY_AN.txt vao dist.
+) else (
+    echo Da copy HUONG_DAN_CAI_DAT_CHAY_AN.txt vao dist.
+)
 echo Dat webserver_config.json canh file exe neu muon dung cau hinh rieng ben ngoai.
 pause

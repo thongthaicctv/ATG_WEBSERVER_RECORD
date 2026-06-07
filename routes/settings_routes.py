@@ -9,6 +9,9 @@ from services.windows_startup import (
     enable_startup,
     disable_startup,
     is_startup_enabled,
+    exe_path,
+    shortcut_path,
+    startup_command,
 )
 
 
@@ -116,5 +119,8 @@ def startup_settings():
         "settings/startup.html",
         cfg=cfg,
         startup_enabled=is_startup_enabled(),
+        exe_path=exe_path(),
+        shortcut_path=shortcut_path(),
+        startup_command=startup_command(),
         message=message,
     )

@@ -37,4 +37,26 @@
         <button type="submit">Lưu cài đặt</button>
     </form>
 </div>
+
+<div class="panel guide-panel">
+    <h2>Hướng dẫn cài đặt chạy ẩn</h2>
+
+    <ol class="guide-list">
+        <li>Đặt <b>ATG_WEBSERVER.exe</b> và <b>webserver_config.json</b> chung một thư mục cố định, ví dụ <code>D:\PYTHON-TCR\EXE\ATG_WEBSERVER</code>.</li>
+        <li>Mở WebServer, vào <b>Cài đặt WebServer</b>, nhập database, port, DDNS nếu có và các thư mục gốc lưu video. Bấm <b>Lưu cấu hình</b>.</li>
+        <li>Vào trang này, bật <b>Tự khởi động ATG_WEBSERVER cùng Windows</b> và bật <b>Chạy thu nhỏ khi khởi động</b>, sau đó bấm <b>Lưu cài đặt</b>.</li>
+        <li>Thoát app bằng menu tray, mở lại hoặc khởi động lại Windows để kiểm tra. Khi chạy đúng, app không hiện cửa sổ, chỉ có icon tray và thông báo <b>WebServer đang chạy</b>.</li>
+        <li>Nếu đổi vị trí file exe sang thư mục khác, mở lại trang này và bấm <b>Lưu cài đặt</b> để cập nhật shortcut/registry.</li>
+    </ol>
+
+    <div class="guide-note">
+        <div><b>Exe hiện tại:</b> <code>{{ exe_path }}</code></div>
+        <div><b>Shortcut Startup:</b> <code>{{ shortcut_path }}</code></div>
+        <div><b>Lệnh khởi động ẩn:</b> <code>{{ startup_command }}</code></div>
+    </div>
+
+    <div class="hint">
+        Double click icon tray để mở WebServer. Click phải icon tray để chọn Exit WebServer.
+    </div>
+</div>
 {% endblock %}

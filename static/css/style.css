@@ -274,6 +274,35 @@ tr:hover {
 .note {
     color: #666;
 }
+
+.guide-panel {
+    margin-top: 16px;
+}
+
+.guide-list {
+    margin: 8px 0 14px 20px;
+    padding: 0;
+}
+
+.guide-list li {
+    margin-bottom: 8px;
+    line-height: 1.45;
+}
+
+.guide-note {
+    background: #f8fafc;
+    border: 1px solid #d8e0ea;
+    border-radius: 8px;
+    padding: 10px 12px;
+    margin-bottom: 10px;
+    line-height: 1.6;
+    word-break: break-word;
+}
+
+.guide-note code,
+.guide-list code {
+    color: #0b2545;
+}
 .copy-link-box {
     margin-top: 14px;
     padding: 12px;
