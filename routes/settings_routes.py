@@ -93,6 +93,7 @@ def test_database():
 def startup_settings():
     cfg = load_config()
     message = ""
+    message_type = "success"
 
     if request.method == "POST":
         auto_start = bool(request.form.get("auto_start_with_windows"))
@@ -114,6 +115,7 @@ def startup_settings():
 
         except Exception as e:
             message = f"Lỗi cài đặt tự khởi động: {e}"
+            message_type = "error"
 
     return render_template(
         "settings/startup.html",
@@ -123,4 +125,5 @@ def startup_settings():
         shortcut_path=shortcut_path(),
         startup_command=startup_command(),
         message=message,
+        message_type=message_type,
     )

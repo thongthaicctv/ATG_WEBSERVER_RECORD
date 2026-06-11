@@ -4,6 +4,7 @@
 import os
 import sys
 import winreg
+import gc
 from pathlib import Path
 
 
@@ -54,26 +55,76 @@ def is_startup_enabled() -> bool:
 
 
 def enable_startup():
-    import win32com.client
-
     startup_folder().mkdir(parents=True, exist_ok=True)
-
-    shell = win32com.client.Dispatch("WScript.Shell")
-    shortcut = shell.CreateShortCut(str(shortcut_path()))
-
-    target = exe_path()
-
-    shortcut.Targetpath = str(target)
-    shortcut.WorkingDirectory = str(app_root())
-    shortcut.Arguments = "--minimized"
-    shortcut.WindowStyle = 7
-    shortcut.IconLocation = str(icon_path())
-    shortcut.Description = "ATG_WEBSERVER - Auto start with Windows"
-    shortcut.save()
-
     _set_registry_run()
 
+    try:
+        _save_startup_shortcut()
+    except Exception as exc:
+        print(f"STARTUP SHORTCUT WARNING: {exc}")
+
     return True
+
+
+def _save_startup_shortcut():
+    pythoncom = _co_initialize()
+    shell = None
+    shortcut = None
+    try:
+        import win32com.client
+
+        shell = win32com.client.Dispatch("WScript.Shell")
+        shortcut = shell.CreateShortCut(str(shortcut_path()))
+
+        target = exe_path()
+
+        shortcut.Targetpath = str(target)
+        shortcut.WorkingDirectory = str(app_root())
+        shortcut.Arguments = "--minimized"
+        shortcut.WindowStyle = 7
+        shortcut.IconLocation = str(icon_path())
+        shortcut.Description = "ATG_WEBSERVER - Auto start with Windows"
+        shortcut.save()
+    finally:
+        shortcut = None
+        shell = None
+        gc.collect()
+        _co_uninitialize(pythoncom)
+
+
+def _co_initialize():
+    import pythoncom
+
+    pythoncom.CoInitialize()
+    return pythoncom
+
+
+def _co_uninitialize(pythoncom):
+    if pythoncom is None:
+        return
+
+    try:
+        pythoncom.CoUninitialize()
+    except Exception:
+        pass
+
+
+def _startup_shortcut_target(path):
+    pythoncom = _co_initialize()
+    shell = None
+    shortcut = None
+    try:
+        import win32com.client
+
+        shell = win32com.client.Dispatch("WScript.Shell")
+        shortcut = shell.CreateShortCut(str(path))
+        target = shortcut.Targetpath
+        return target
+    finally:
+        shortcut = None
+        shell = None
+        gc.collect()
+        _co_uninitialize(pythoncom)
 
 
 def disable_startup():
@@ -93,11 +144,7 @@ def _shortcut_is_valid() -> bool:
         return False
 
     try:
-        import win32com.client
-
-        shell = win32com.client.Dispatch("WScript.Shell")
-        shortcut = shell.CreateShortCut(str(path))
-        target = Path(shortcut.Targetpath)
+        target = Path(_startup_shortcut_target(path))
         return target.exists()
     except Exception:
         return False
