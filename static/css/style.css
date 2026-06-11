@@ -70,6 +70,7 @@ body {
     flex: 1;
     padding: 22px;
     overflow-x: auto;
+    min-width: 0;
 }
 
 h1 {
@@ -243,6 +244,12 @@ tr:hover {
     margin-top: 5px;
 }
 
+.btn-small {
+    padding: 6px 9px;
+    font-size: 13px;
+    line-height: 1.1;
+}
+
 .settings-form textarea {
     resize: vertical;
     min-height: 86px;
@@ -368,6 +375,209 @@ tr:hover {
 
 .order-link:hover {
     text-decoration: underline;
+}
+
+.video-table {
+    table-layout: fixed;
+    font-size: 13px;
+}
+
+.video-table th,
+.video-table td {
+    padding: 7px 6px;
+}
+
+.video-table .col-time {
+    width: 8%;
+}
+
+.video-table .col-order {
+    width: 12%;
+}
+
+.video-table .col-action {
+    width: 7%;
+}
+
+.video-table .col-box {
+    width: 5%;
+}
+
+.video-table .col-scanner {
+    width: 6%;
+}
+
+.video-table .col-camera {
+    width: 6%;
+}
+
+.video-table .col-employee {
+    width: 12%;
+}
+
+.video-table .col-file {
+    width: 30%;
+}
+
+.video-table .col-size {
+    width: 6%;
+}
+
+.video-table .col-duration {
+    width: 8%;
+}
+
+.video-table td {
+    overflow-wrap: anywhere;
+}
+
+.video-table .file-cell {
+    text-align: left;
+    font-size: 12px;
+    line-height: 1.25;
+}
+
+.video-table .action-cell {
+    text-align: center;
+}
+
+.video-table .action-cell .btn-small {
+    display: block;
+    min-width: 42px;
+    text-align: center;
+    margin: 0 auto 4px;
+}
+
+.video-table .action-cell .btn-small:last-child {
+    margin-bottom: 0;
+}
+
+@media (max-width: 1366px) {
+    body {
+        font-size: 14px;
+    }
+
+    .sidebar {
+        width: 176px;
+    }
+
+    .brand {
+        padding: 14px 10px;
+        font-size: 17px;
+        letter-spacing: 0;
+    }
+
+    .user-box {
+        padding: 10px 12px;
+    }
+
+    .sidebar nav {
+        padding: 10px 8px;
+    }
+
+    .sidebar nav a {
+        padding: 9px 10px;
+        margin-bottom: 4px;
+        border-radius: 6px;
+        font-size: 13px;
+    }
+
+    .content {
+        padding: 16px;
+    }
+
+    h1 {
+        font-size: 24px;
+        margin-bottom: 14px;
+    }
+
+    .search-box {
+        padding: 9px;
+        margin-bottom: 10px;
+        gap: 6px;
+        border-radius: 9px;
+    }
+
+    .search-box input,
+    .search-box select {
+        min-width: 128px;
+        flex: 1 1 128px;
+        padding: 7px 8px;
+        font-size: 12px;
+    }
+
+    .search-box button,
+    .search-box .btn-gray {
+        padding: 7px 10px;
+        font-size: 12px;
+    }
+
+    table {
+        border-radius: 8px;
+    }
+
+    .video-table {
+        font-size: 12px;
+    }
+
+    .video-table th,
+    .video-table td {
+        padding: 6px 5px;
+    }
+
+    .video-table .file-cell {
+        font-size: 11px;
+    }
+}
+
+@media (max-width: 1180px) {
+    .sidebar {
+        width: 156px;
+    }
+
+    .content {
+        padding: 12px;
+    }
+
+    .video-table .col-time {
+        width: 9%;
+    }
+
+    .video-table .col-order {
+        width: 13%;
+    }
+
+    .video-table .col-action {
+        width: 8%;
+    }
+
+    .video-table .col-box {
+        width: 5%;
+    }
+
+    .video-table .col-scanner {
+        width: 5%;
+    }
+
+    .video-table .col-camera {
+        width: 6%;
+    }
+
+    .video-table .col-employee {
+        width: 10%;
+    }
+
+    .video-table .col-file {
+        width: 29%;
+    }
+
+    .video-table .col-size {
+        width: 6%;
+    }
+
+    .video-table .col-duration {
+        width: 9%;
+    }
 }
 
 .login-page {

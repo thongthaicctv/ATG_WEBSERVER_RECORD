@@ -18,11 +18,24 @@
     <a href="/video/wholesale/" class="btn-gray">Xóa lọc</a>
 </form>
 
-<table>
+<table class="video-table">
+    <colgroup>
+        <col class="col-time">
+        <col class="col-order">
+        <col class="col-action">
+        <col class="col-box">
+        <col class="col-scanner">
+        <col class="col-camera">
+        <col class="col-employee">
+        <col class="col-file">
+        <col class="col-size">
+        <col class="col-duration">
+    </colgroup>
     <thead>
         <tr>
             <th>Thời gian</th>
             <th>Mã đơn</th>
+            <th>Thao tác</th>
             <th>Box</th>
             <th>Scanner</th>
             <th>Camera</th>
@@ -30,7 +43,6 @@
             <th>File</th>
             <th>Dung lượng</th>
             <th>Thời lượng</th>
-            <th>Thao tác</th>
         </tr>
     </thead>
     <tbody>
@@ -42,17 +54,17 @@
                     <b>{{ v.order_code }}</b>
                 </a>
             </td>
+            <td class="action-cell">
+                <a class="btn btn-small" target="_blank" href="/video/play/{{ v.id }}">Xem</a>
+                <a class="btn-green btn-small" href="/video/download/{{ v.id }}">Tải</a>
+            </td>
             <td>{{ v.box_code or "" }}</td>
             <td>{{ v.scanner_id or "" }}</td>
             <td>{{ v.camera_id }} - {{ v.camera_name or "" }}</td>
             <td>{{ v.employee_name or v.employee_code or "" }}</td>
-            <td>{{ v.file_name or "" }}</td>
+            <td class="file-cell">{{ v.file_name or "" }}</td>
             <td>{{ ((v.file_size or 0) // 1024 // 1024) }} MB</td>
             <td>{{ v.duration_seconds or 0 }} giây</td>
-            <td>
-                <a class="btn" target="_blank" href="/video/play/{{ v.id }}">Xem</a>
-                <a class="btn-green" href="/video/download/{{ v.id }}">Tải</a>
-            </td>
         </tr>
     {% else %}
         <tr>
