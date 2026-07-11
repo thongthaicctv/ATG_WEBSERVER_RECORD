@@ -28,11 +28,11 @@ HUONG DAN CAI DAT ATG_WEBSERVER CHAY AN CUNG WINDOWS
 - Bam Luu cai dat.
 
 4. Kiem tra
-- Thoat app bang icon tray: click phai icon ATG_WEBSERVER, chon Exit WebServer.
+- Thoat app bang icon tray: click trai hoac click phai icon ATG_WEBSERVER, chon Exit WebServer.
 - Mo lai ATG_WEBSERVER.exe hoac restart Windows.
 - Khi chay dung, app khong hien cua so, chi co icon tray va thong bao WebServer dang chay.
 - Double click icon tray de mo WebServer.
-- Click phai icon tray de mo menu va thoat app.
+- Click trai hoac click phai icon tray de mo menu Mo WebServer / Exit WebServer.
 
 5. Luu y khi doi thu muc cai dat
 - Neu copy ATG_WEBSERVER.exe sang thu muc khac, phai mo lai trang Tu khoi dong Windows va bam Luu cai dat de cap nhat shortcut/registry.

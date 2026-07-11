@@ -3,14 +3,17 @@
 
 import os
 import sys
+import time
 import threading
 import webbrowser
 from pathlib import Path
+from urllib.parse import urlparse
 
 
 APP_NAME = "ATG WEBSERVER"
 MENU_OPEN_ID = 1001
 MENU_EXIT_ID = 1002
+_exit_requested = threading.Event()
 
 
 def resource_root() -> Path:
@@ -44,8 +47,47 @@ def start_tray_icon(host, port, public_host=""):
     return thread
 
 
+def _local_web_url(port):
+    return f"http://127.0.0.1:{port}/"
+
+
+def _public_web_url(port, public_host):
+    public_host = str(public_host or "").strip()
+    if not public_host:
+        return _local_web_url(port)
+
+    if "://" not in public_host:
+        public_host = f"http://{public_host}"
+
+    parsed = urlparse(public_host)
+    scheme = parsed.scheme or "http"
+    host = (parsed.netloc or parsed.path).strip("/")
+    if ":" not in host:
+        host = f"{host}:{port}"
+
+    return f"{scheme}://{host}/"
+
+
 def _open_webserver(port):
-    webbrowser.open(f"http://127.0.0.1:{port}")
+    url = _local_web_url(port)
+
+    if os.name == "nt":
+        try:
+            import win32api
+            import win32con
+
+            win32api.ShellExecute(0, "open", url, None, None, win32con.SW_SHOWNORMAL)
+            return
+        except Exception:
+            pass
+
+        try:
+            os.startfile(url)  # noqa: S606 - URL is generated locally from configured port.
+            return
+        except Exception:
+            pass
+
+    webbrowser.open_new_tab(url)
 
 
 def _run_tray_icon(host, port, public_host):
@@ -60,6 +102,18 @@ def _run_tray_icon(host, port, public_host):
     message_id = win32con.WM_USER + 20
     left_click_timer_id = 1
     class_name = "ATG_WEBSERVER_TRAY"
+    menu_visible = False
+
+    def show_menu(hwnd):
+        nonlocal menu_visible
+        if menu_visible:
+            return
+
+        menu_visible = True
+        try:
+            _show_menu(hwnd, win32gui, win32con, port)
+        finally:
+            menu_visible = False
 
     def window_proc(hwnd, msg, wparam, lparam):
         if msg == message_id:
@@ -72,13 +126,12 @@ def _run_tray_icon(host, port, public_host):
             elif lparam == win32con.WM_LBUTTONUP:
                 win32gui.SetTimer(hwnd, left_click_timer_id, 250, None)
             elif lparam in (
-                win32con.WM_RBUTTONDOWN,
                 win32con.WM_RBUTTONUP,
                 win32con.WM_CONTEXTMENU,
                 win32con.WM_USER,
                 win32con.WM_USER + 1,
             ):
-                _show_menu(hwnd, win32gui, win32con, port)
+                show_menu(hwnd)
             return True
 
         if msg == win32con.WM_COMMAND:
@@ -92,7 +145,7 @@ def _run_tray_icon(host, port, public_host):
 
         if msg == win32con.WM_TIMER and wparam == left_click_timer_id:
             win32gui.KillTimer(hwnd, left_click_timer_id)
-            _show_menu(hwnd, win32gui, win32con, port)
+            show_menu(hwnd)
             return True
 
         if msg == win32con.WM_DESTROY:
@@ -130,7 +183,7 @@ def _run_tray_icon(host, port, public_host):
     tooltip = f"{APP_NAME} - http://127.0.0.1:{port}"
     _add_icon(hwnd, hicon, tooltip, message_id, win32gui)
 
-    public_text = f"http://{public_host}:{port}" if public_host else f"http://127.0.0.1:{port}"
+    public_text = _public_web_url(port, public_host)
     _show_balloon(hwnd, hicon, tooltip, message_id, public_text, win32gui)
 
     win32gui.PumpMessages()
@@ -195,6 +248,10 @@ def _show_menu(hwnd, win32gui, win32con, port):
     win32gui.AppendMenu(menu, win32con.MF_STRING, MENU_OPEN_ID, "Mo WebServer")
     win32gui.AppendMenu(menu, win32con.MF_SEPARATOR, 0, None)
     win32gui.AppendMenu(menu, win32con.MF_STRING, MENU_EXIT_ID, "Exit WebServer")
+    try:
+        win32gui.SetMenuDefaultItem(menu, MENU_OPEN_ID, False)
+    except Exception:
+        pass
 
     pos = win32gui.GetCursorPos()
     try:
@@ -202,20 +259,23 @@ def _show_menu(hwnd, win32gui, win32con, port):
     except Exception:
         pass
 
-    command = win32gui.TrackPopupMenu(
-        menu,
-        win32con.TPM_LEFTALIGN
-        | win32con.TPM_RETURNCMD
-        | win32con.TPM_LEFTBUTTON
-        | win32con.TPM_RIGHTBUTTON,
-        pos[0],
-        pos[1],
-        0,
-        hwnd,
-        None,
-    )
-    win32gui.PostMessage(hwnd, win32con.WM_NULL, 0, 0)
-    win32gui.DestroyMenu(menu)
+    try:
+        command = win32gui.TrackPopupMenu(
+            menu,
+            win32con.TPM_LEFTALIGN
+            | win32con.TPM_RETURNCMD
+            | win32con.TPM_NONOTIFY
+            | win32con.TPM_LEFTBUTTON
+            | win32con.TPM_RIGHTBUTTON,
+            pos[0],
+            pos[1],
+            0,
+            hwnd,
+            None,
+        )
+    finally:
+        win32gui.PostMessage(hwnd, win32con.WM_NULL, 0, 0)
+        win32gui.DestroyMenu(menu)
 
     if command == MENU_OPEN_ID:
         _open_webserver(port)
@@ -224,23 +284,28 @@ def _show_menu(hwnd, win32gui, win32con, port):
 
 
 def _exit_app(hwnd, win32gui):
+    if _exit_requested.is_set():
+        return
+    _exit_requested.set()
+
+    thread = threading.Thread(
+        target=_force_exit_process,
+        args=(hwnd, win32gui),
+        daemon=False,
+    )
+    thread.start()
+
+
+def _force_exit_process(hwnd, win32gui):
     _remove_icon(hwnd, win32gui)
+    try:
+        win32gui.PostMessage(hwnd, 0x0010, 0, 0)  # WM_CLOSE
+    except Exception:
+        pass
     try:
         win32gui.DestroyWindow(hwnd)
     except Exception:
         pass
 
-    try:
-        import win32api
-        import win32con
-
-        handle = win32api.OpenProcess(
-            win32con.PROCESS_TERMINATE,
-            False,
-            os.getpid(),
-        )
-        win32api.TerminateProcess(handle, 0)
-    except Exception:
-        pass
-
+    time.sleep(0.1)
     os._exit(0)

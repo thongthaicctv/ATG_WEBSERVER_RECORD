@@ -25,7 +25,6 @@ def index():
             camera_id,
             camera_name,
             file_path,
-            file_name,
             file_size,
             duration_seconds,
             start_time,

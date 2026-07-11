@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Xem video</h1>
+
+{% if not native_play and not can_ffmpeg %}
+<div class="alert-error">
+    Chưa tìm thấy ffmpeg.exe để xem trực tiếp định dạng {{ path.suffix }} trên trình duyệt.
+    Có thể tải file gốc hoặc đặt ffmpeg.exe vào thư mục bin cạnh file exe.
+</div>
+{% endif %}
+
+<div class="video-player-panel">
+    <div class="player-meta">
+        <div><b>Mã đơn:</b> {{ video.order_code or "" }}</div>
+        <div><b>Camera:</b> {{ video.camera_id or "" }}{% if video.camera_name %} - {{ video.camera_name }}{% endif %}</div>
+        <div><b>Thời gian:</b> {{ video.start_time or video.created_at or "" }}</div>
+        <div><b>Dung lượng:</b> {{ ((video.file_size or 0) // 1024 // 1024) }} MB</div>
+    </div>
+
+    <video class="video-player" controls autoplay preload="metadata" src="{{ primary_url }}">
+        Trình duyệt không hỗ trợ phát video.
+    </video>
+
+    <div class="player-actions">
+        {% if can_ffmpeg %}
+            <a class="{% if primary_mode == 'remux' %}btn-green{% else %}btn-gray{% endif %}" href="{{ remux_url }}">Phát nhanh MKV/TS</a>
+            <a class="{% if primary_mode == 'transcode' %}btn-green{% else %}btn-gray{% endif %}" href="{{ transcode_url }}">Chế độ tương thích</a>
+        {% endif %}
+        <a class="{% if primary_mode == 'raw' %}btn-green{% else %}btn-gray{% endif %}" href="{{ raw_url }}" target="_blank">File gốc</a>
+        <a class="btn" href="{{ download_url }}">Tải về</a>
+        {% if can_access("video_share") %}
+            <button type="button" class="btn-gray" onclick="copyShareDownloadLink()">Chia sẻ tải</button>
+        {% endif %}
+    </div>
+
+    <div class="hint">
+        Với file .mkv/.ts, ưu tiên Phát nhanh MKV/TS. Nếu trình duyệt chỉ hiện màn hình đen hoặc không có hình, chọn Chế độ tương thích.
+    </div>
+</div>
+
+{% if can_access("video_share") %}
+<script>
+function fallbackCopyText(text) {
+    const input = document.createElement("textarea");
+    input.value = text;
+    input.style.position = "fixed";
+    input.style.opacity = "0";
+    document.body.appendChild(input);
+    input.focus();
+    input.select();
+    try {
+        document.execCommand("copy");
+    } finally {
+        document.body.removeChild(input);
+    }
+}
+
+function copyTextToClipboard(text) {
+    if (navigator.clipboard && window.isSecureContext) {
+        return navigator.clipboard.writeText(text);
+    }
+    fallbackCopyText(text);
+    return Promise.resolve();
+}
+
+function copyShareDownloadLink() {
+    fetch("{{ share_link_url }}")
+        .then(function(response) {
+            if (!response.ok) {
+                throw new Error("Không tạo được link chia sẻ.");
+            }
+            return response.json();
+        })
+        .then(function(data) {
+            if (!data.ok || !data.link) {
+                throw new Error("Không tạo được link chia sẻ.");
+            }
+            return copyTextToClipboard(data.link).then(function() {
+                alert("Đã copy link tải công khai:\n" + data.link);
+            });
+        })
+        .catch(function(error) {
+            alert(error.message || "Không tạo được link chia sẻ.");
+        });
+}
+</script>
+{% endif %}
+{% endblock %}

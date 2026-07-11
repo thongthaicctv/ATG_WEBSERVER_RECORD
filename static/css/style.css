@@ -388,53 +388,43 @@ tr:hover {
 }
 
 .video-table .col-time {
-    width: 8%;
+    width: 10%;
 }
 
 .video-table .col-order {
-    width: 12%;
+    width: 15%;
 }
 
 .video-table .col-action {
-    width: 7%;
+    width: 8%;
 }
 
 .video-table .col-box {
-    width: 5%;
+    width: 8%;
 }
 
 .video-table .col-scanner {
-    width: 6%;
+    width: 7%;
 }
 
 .video-table .col-camera {
-    width: 6%;
+    width: 10%;
 }
 
 .video-table .col-employee {
-    width: 12%;
-}
-
-.video-table .col-file {
-    width: 30%;
+    width: 22%;
 }
 
 .video-table .col-size {
-    width: 6%;
+    width: 8%;
 }
 
 .video-table .col-duration {
-    width: 8%;
+    width: 12%;
 }
 
 .video-table td {
     overflow-wrap: anywhere;
-}
-
-.video-table .file-cell {
-    text-align: left;
-    font-size: 12px;
-    line-height: 1.25;
 }
 
 .video-table .action-cell {
@@ -450,6 +440,37 @@ tr:hover {
 
 .video-table .action-cell .btn-small:last-child {
     margin-bottom: 0;
+}
+
+.video-player-panel {
+    background: white;
+    border-radius: 10px;
+    padding: 14px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+}
+
+.player-meta {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(160px, 1fr));
+    gap: 8px 14px;
+    margin-bottom: 12px;
+    color: #0b2545;
+}
+
+.video-player {
+    display: block;
+    width: 100%;
+    max-height: calc(100vh - 230px);
+    min-height: 360px;
+    background: #05070a;
+    border-radius: 8px;
+}
+
+.player-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 12px;
 }
 
 @media (max-width: 1366px) {
@@ -525,9 +546,20 @@ tr:hover {
         padding: 6px 5px;
     }
 
-    .video-table .file-cell {
-        font-size: 11px;
+    .video-player-panel {
+        padding: 10px;
     }
+
+    .player-meta {
+        grid-template-columns: repeat(2, minmax(150px, 1fr));
+        font-size: 13px;
+    }
+
+    .video-player {
+        max-height: calc(100vh - 200px);
+        min-height: 300px;
+    }
+
 }
 
 @media (max-width: 1180px) {
@@ -540,11 +572,11 @@ tr:hover {
     }
 
     .video-table .col-time {
-        width: 9%;
+        width: 10%;
     }
 
     .video-table .col-order {
-        width: 13%;
+        width: 15%;
     }
 
     .video-table .col-action {
@@ -552,31 +584,27 @@ tr:hover {
     }
 
     .video-table .col-box {
-        width: 5%;
+        width: 8%;
     }
 
     .video-table .col-scanner {
-        width: 5%;
+        width: 6%;
     }
 
     .video-table .col-camera {
-        width: 6%;
+        width: 9%;
     }
 
     .video-table .col-employee {
-        width: 10%;
-    }
-
-    .video-table .col-file {
-        width: 29%;
+        width: 22%;
     }
 
     .video-table .col-size {
-        width: 6%;
+        width: 9%;
     }
 
     .video-table .col-duration {
-        width: 9%;
+        width: 13%;
     }
 }
 

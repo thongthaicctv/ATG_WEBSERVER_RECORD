@@ -18,6 +18,7 @@ DEFAULT_USERS = [
 PUBLIC_ENDPOINTS = {
     "auth.login",
     "auth.logout",
+    "video.public_download",
     "static",
 }
 
@@ -28,6 +29,7 @@ ROLE_PERMISSIONS = {
         "orders",
         "video_view",
         "video_download",
+        "video_share",
         "reports",
         "user_passwords",
     },
@@ -220,11 +222,21 @@ def permission_for_endpoint(endpoint):
     if endpoint.startswith("orders."):
         return "orders"
 
-    if endpoint in {"video_ecom.index", "video_wholesale.index", "video.play_video", "video.get_video_link"}:
+    if endpoint in {
+        "video_ecom.index",
+        "video_wholesale.index",
+        "video.play_video",
+        "video.raw_video",
+        "video.stream_video",
+        "video.get_video_link",
+    }:
         return "video_view"
 
     if endpoint == "video.download_video":
         return "video_download"
+
+    if endpoint == "video.share_download_link":
+        return "video_share"
 
     if endpoint == "auth.password_users":
         return "user_passwords"

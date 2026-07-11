@@ -27,7 +27,6 @@
         <col class="col-scanner">
         <col class="col-camera">
         <col class="col-employee">
-        <col class="col-file">
         <col class="col-size">
         <col class="col-duration">
     </colgroup>
@@ -40,7 +39,6 @@
             <th>Scanner</th>
             <th>Camera</th>
             <th>Nhân viên</th>
-            <th>File</th>
             <th>Dung lượng</th>
             <th>Thời lượng</th>
         </tr>
@@ -62,13 +60,12 @@
             <td>{{ v.scanner_id or "" }}</td>
             <td>{{ v.camera_id }} - {{ v.camera_name or "" }}</td>
             <td>{{ v.employee_name or v.employee_code or "" }}</td>
-            <td class="file-cell">{{ v.file_name or "" }}</td>
             <td>{{ ((v.file_size or 0) // 1024 // 1024) }} MB</td>
             <td>{{ v.duration_seconds or 0 }} giây</td>
         </tr>
     {% else %}
         <tr>
-            <td colspan="10" class="empty">Không có dữ liệu</td>
+            <td colspan="9" class="empty">Không có dữ liệu</td>
         </tr>
     {% endfor %}
     </tbody>
