@@ -1,0 +1,9 @@
+2026-08-28 17:10:39,939 INFO waitress: Serving on http://0.0.0.0:8088
+2026-08-28 17:13:51,497 INFO waitress: Serving on http://0.0.0.0:8088
+2026-08-28 17:16:27,770 INFO waitress: Client disconnected while serving /video/stream/275
+2026-08-28 17:16:54,818 INFO waitress: Client disconnected while serving /video/stream/276
+2026-08-28 17:16:57,664 INFO waitress: Client disconnected while serving /video/stream/276
+2026-08-28 17:20:38,858 WARNING waitress: 3 thread(s) still running
+2026-08-28 17:22:54,960 INFO waitress: Serving on http://0.0.0.0:8088
+2026-08-28 17:24:52,535 INFO waitress: Serving on http://0.0.0.0:8088
+2026-08-28 17:25:15,687 INFO waitress: Client disconnected while serving /video/stream/276

@@ -6,8 +6,23 @@ import sys
 import time
 import threading
 import webbrowser
+import ctypes
 from pathlib import Path
 from urllib.parse import urlparse
+
+
+user32 = ctypes.windll.user32
+
+
+def set_win_timer(hwnd, timer_id, interval_ms):
+    result = user32.SetTimer(int(hwnd), int(timer_id), int(interval_ms), None)
+    if not result:
+        raise ctypes.WinError()
+    return result
+
+
+def kill_win_timer(hwnd, timer_id):
+    user32.KillTimer(int(hwnd), int(timer_id))
 
 
 APP_NAME = "ATG WEBSERVER"
@@ -119,12 +134,12 @@ def _run_tray_icon(host, port, public_host):
         if msg == message_id:
             if lparam == win32con.WM_LBUTTONDBLCLK:
                 try:
-                    win32gui.KillTimer(hwnd, left_click_timer_id)
+                    kill_win_timer(hwnd, left_click_timer_id)
                 except Exception:
                     pass
                 _open_webserver(port)
             elif lparam == win32con.WM_LBUTTONUP:
-                win32gui.SetTimer(hwnd, left_click_timer_id, 250, None)
+                set_win_timer(hwnd, left_click_timer_id, 250)
             elif lparam in (
                 win32con.WM_RBUTTONUP,
                 win32con.WM_CONTEXTMENU,
@@ -144,7 +159,7 @@ def _run_tray_icon(host, port, public_host):
                 return True
 
         if msg == win32con.WM_TIMER and wparam == left_click_timer_id:
-            win32gui.KillTimer(hwnd, left_click_timer_id)
+            kill_win_timer(hwnd, left_click_timer_id)
             show_menu(hwnd)
             return True
 
@@ -246,7 +261,7 @@ def _show_menu(hwnd, win32gui, win32con, port):
     menu = win32gui.CreatePopupMenu()
 
     win32gui.AppendMenu(menu, win32con.MF_STRING, MENU_OPEN_ID, "Mo WebServer")
-    win32gui.AppendMenu(menu, win32con.MF_SEPARATOR, 0, None)
+    win32gui.AppendMenu(menu, win32con.MF_SEPARATOR, 0, "")
     win32gui.AppendMenu(menu, win32con.MF_STRING, MENU_EXIT_ID, "Exit WebServer")
     try:
         win32gui.SetMenuDefaultItem(menu, MENU_OPEN_ID, False)
