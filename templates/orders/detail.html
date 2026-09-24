@@ -103,7 +103,8 @@
                 <td>
                     {% if v.file_exists %}
                         <a class="btn" target="_blank" href="/video/play/{{ v.id }}">Xem</a>
-                        <a class="btn-green" href="/video/download/{{ v.id }}">Tải</a>
+                        <a class="btn-green" href="/video/download-original/{{ v.id }}">Tải gốc</a>
+                        <a class="btn-orange" href="/video/download-mp4/{{ v.id }}">Tải MP4</a>
                         <button type="button" class="btn-gray" onclick="copyVideoLink({{ v.id }})">Copy</button>
                     {% else %}
                         <span class="red-text">Không khả dụng</span>

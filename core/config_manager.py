@@ -36,6 +36,13 @@ DEFAULT_CONFIG = {
         "allow_play": True,
         "allow_download": True
     },
+    "download": {
+        "allow_original": True,
+        "allow_mp4_convert": True,
+        "mp4_cache_dir": "web_cache/mp4",
+        "convert_timeout_seconds": 600,
+        "mp4_mode": "copy_first"
+    },
     "security": {
         "require_login": False,
         "username": "admin",

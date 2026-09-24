@@ -8,6 +8,9 @@ from urllib.parse import urlparse
 
 from flask import Blueprint, Response, abort, jsonify, render_template, request, send_file, stream_with_context, url_for
 
+from services.video_convert_service import convert_to_mp4
+from pathlib import Path
+
 from core.config_manager import load_config
 from core.video_path_resolver import resolve_video_path, video_path_candidates
 from db.mysql_client import fetch_one
@@ -177,6 +180,8 @@ def play_video(video_id):
         remux_url=url_for("video.play_video", video_id=video_id, mode="remux"),
         transcode_url=url_for("video.play_video", video_id=video_id, mode="transcode"),
         download_url=url_for("video.download_video", video_id=video_id),
+        download_original_url=url_for("video.download_original_video", video_id=video_id),
+        download_mp4_url=url_for("video.download_mp4_video", video_id=video_id),
         share_link_url=url_for("video.share_download_link", video_id=video_id),
         ffmpeg_path=ffmpeg_path,
     )
@@ -230,10 +235,18 @@ def stream_video(video_id):
 
 @video_bp.route("/download/<int:video_id>")
 def download_video(video_id):
+    return download_original_video(video_id)
+
+
+@video_bp.route("/download-original/<int:video_id>")
+def download_original_video(video_id):
     cfg = load_config()
 
     if not cfg.get("video", {}).get("allow_download", True):
         abort(403, "Chức năng tải video đang bị tắt.")
+
+    if not cfg.get("download", {}).get("allow_original", True):
+        abort(403, "Chức năng tải file gốc đang bị tắt.")
 
     video = _get_video_or_404(video_id)
     path = _resolve_existing_path_or_404(video, cfg)
@@ -242,8 +255,37 @@ def download_video(video_id):
         path,
         as_attachment=True,
         download_name=_download_name(video, path),
+        conditional=True,
     )
 
+
+@video_bp.route("/download-mp4/<int:video_id>")
+def download_mp4_video(video_id):
+    cfg = load_config()
+
+    if not cfg.get("video", {}).get("allow_download", True):
+        abort(403, "Chức năng tải video đang bị tắt.")
+
+    if not cfg.get("download", {}).get("allow_mp4_convert", True):
+        abort(403, "Chức năng chuyển MP4 đang bị tắt.")
+
+    video = _get_video_or_404(video_id)
+    path = _resolve_existing_path_or_404(video, cfg)
+
+    try:
+        mp4_path = convert_to_mp4(str(path), video_id, cfg)
+    except Exception as exc:
+        abort(500, f"Không chuyển được MP4: {exc}")
+
+    download_name = Path(_download_name(video, path)).with_suffix(".mp4").name
+
+    return send_file(
+        mp4_path,
+        as_attachment=True,
+        download_name=download_name,
+        mimetype="video/mp4",
+        conditional=True,
+    )
 
 @video_bp.route("/share-link/<int:video_id>")
 def share_download_link(video_id):

@@ -232,7 +232,11 @@ def permission_for_endpoint(endpoint):
     }:
         return "video_view"
 
-    if endpoint == "video.download_video":
+    if endpoint in {
+        "video.download_video",
+        "video.download_original_video",
+        "video.download_mp4_video",
+    }:
         return "video_download"
 
     if endpoint == "video.share_download_link":

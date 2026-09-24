@@ -54,7 +54,8 @@
             </td>
             <td class="action-cell">
                 <a class="btn btn-small" target="_blank" href="/video/play/{{ v.id }}">Xem</a>
-                <a class="btn-green btn-small" href="/video/download/{{ v.id }}">Tải</a>
+                <a class="btn-green btn-small" href="/video/download-original/{{ v.id }}">Tải gốc</a>
+                <a class="btn-orange btn-small" href="/video/download-mp4/{{ v.id }}">Tải MP4</a>
             </td>
             <td>{{ v.box_code or "" }}</td>
             <td>{{ v.scanner_id or "" }}</td>

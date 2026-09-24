@@ -28,7 +28,8 @@
             <a class="{% if primary_mode == 'transcode' %}btn-green{% else %}btn-gray{% endif %}" href="{{ transcode_url }}">Chế độ tương thích</a>
         {% endif %}
         <a class="{% if primary_mode == 'raw' %}btn-green{% else %}btn-gray{% endif %}" href="{{ raw_url }}" target="_blank">File gốc</a>
-        <a class="btn" href="{{ download_url }}">Tải về</a>
+        <a class="btn-green" href="{{ download_original_url }}">Tải gốc</a>
+        <a class="btn-orange" href="{{ download_mp4_url }}">Tải MP4</a>
         {% if can_access("video_share") %}
             <button type="button" class="btn-gray" onclick="copyShareDownloadLink()">Chia sẻ tải</button>
         {% endif %}

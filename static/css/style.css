@@ -663,3 +663,24 @@ tr:hover {
     background: #0b5ed7;
     color: white;
 }
+
+.btn-orange {
+    display: inline-block;
+    padding: 8px 12px;
+    border-radius: 7px;
+    border: none;
+    cursor: pointer;
+    text-decoration: none;
+    color: white;
+    background: #fd7e14;
+    font-size: 14px;
+}
+
+.btn-orange:hover {
+    opacity: 0.9;
+}
+
+.btn-orange.btn-small {
+    padding: 5px 8px;
+    font-size: 12px;
+}
