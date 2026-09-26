@@ -1,4 +1,4 @@
-HUONG DAN CAI DAT ATG_WEBSERVER CHAY AN CUNG WINDOWS
+HUONG DAN CAI DAT ATG_DIGICAM WebServer (ATG_WEBSERVER.exe) CHAY AN CUNG WINDOWS
 
 1. Chuan bi thu muc cai dat
 - Tao mot thu muc co dinh tren may chay WebServer, vi du:

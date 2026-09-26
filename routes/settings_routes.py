@@ -106,10 +106,10 @@ def startup_settings():
         try:
             if auto_start:
                 enable_startup()
-                message = "Đã bật tự khởi động ATG_WEBSERVER cùng Windows."
+                message = "Đã bật tự khởi động ATG_DIGICAM WebServer cùng Windows."
             else:
                 disable_startup()
-                message = "Đã tắt tự khởi động ATG_WEBSERVER cùng Windows."
+                message = "Đã tắt tự khởi động ATG_DIGICAM WebServer cùng Windows."
 
             save_config(cfg)
 

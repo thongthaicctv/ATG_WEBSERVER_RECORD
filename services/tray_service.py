@@ -25,7 +25,7 @@ def kill_win_timer(hwnd, timer_id):
     user32.KillTimer(int(hwnd), int(timer_id))
 
 
-APP_NAME = "ATG WEBSERVER"
+APP_NAME = "ATG_DIGICAM WebServer"
 MENU_OPEN_ID = 1001
 MENU_EXIT_ID = 1002
 _exit_requested = threading.Event()

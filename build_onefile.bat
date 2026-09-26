@@ -4,7 +4,7 @@ setlocal
 cd /d "%~dp0"
 
 echo ========================================
-echo Build ATG_WEBSERVER onefile
+echo Build ATG_DIGICAM WebServer onefile (ATG_WEBSERVER.exe)
 echo ========================================
 
 where pyinstaller >nul 2>nul

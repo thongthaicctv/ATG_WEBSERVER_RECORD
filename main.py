@@ -112,7 +112,7 @@ if __name__ == "__main__":
     app = create_app()
 
     print("=" * 60)
-    print("ATG_WEBSERVER STARTED")
+    print("ATG_DIGICAM WebServer STARTED")
     print(f"Local:  http://127.0.0.1:{port}")
     print(f"LAN:    http://<IP_MAY_CHAY_WEBSERVER>:{port}")
     print("=" * 60)

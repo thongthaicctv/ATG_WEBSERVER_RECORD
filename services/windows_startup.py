@@ -12,11 +12,8 @@ APP_NAME = "ATG_WEBSERVER"
 RUN_KEY = r"Software\Microsoft\Windows\CurrentVersion\Run"
 
 
-def app_root() -> Path:
-    if getattr(sys, "frozen", False):
-        return Path(sys.executable).resolve().parent
-
-    return Path(__file__).resolve().parent.parent
+# Dung chung co che xac dinh app root voi core/path_utils.py
+from core.path_utils import app_root  # noqa: E402
 
 
 def exe_path() -> Path:
@@ -83,7 +80,7 @@ def _save_startup_shortcut():
         shortcut.Arguments = "--minimized"
         shortcut.WindowStyle = 7
         shortcut.IconLocation = str(icon_path())
-        shortcut.Description = "ATG_WEBSERVER - Auto start with Windows"
+        shortcut.Description = "ATG_DIGICAM WebServer - Auto start with Windows"
         shortcut.save()
     finally:
         shortcut = None

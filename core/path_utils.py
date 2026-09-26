@@ -8,7 +8,7 @@ from pathlib import Path
 def app_root() -> Path:
     """
     Khi chạy source:
-        trả về thư mục project ATG_WEBSERVER.
+        trả về thư mục project ATG_DIGICAM_WEBSERVER (xác định động, không hardcode).
 
     Khi build exe:
         trả về thư mục chứa file ATG_WEBSERVER.exe.

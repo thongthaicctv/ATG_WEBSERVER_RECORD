@@ -1,4 +1,4 @@
-ATG_WEBSERVER/
+ATG_DIGICAM_WEBSERVER/
 │
 ├─ app.py
 ├─ webserver_config.json
