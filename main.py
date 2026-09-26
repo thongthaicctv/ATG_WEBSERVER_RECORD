@@ -12,6 +12,7 @@ from werkzeug.exceptions import HTTPException
 from core.config_manager import load_config
 from core.auth_manager import ensure_default_users, register_auth_guards
 from core.path_utils import get_log_path
+from core.version import APP_DISPLAY_NAME, APP_VERSION
 
 from routes.auth_routes import auth_bp
 from routes.dashboard_routes import dashboard_bp
@@ -85,6 +86,14 @@ def create_app():
         print(f"AUTH INIT WARNING: {e}")
 
     register_auth_guards(app)
+
+    # WEB-REL-1A: chi inject version de hien thi tren template.
+    @app.context_processor
+    def inject_app_version():
+        return {
+            "app_version": APP_VERSION,
+            "app_display_name": APP_DISPLAY_NAME,
+        }
     setup_logging(app)
 
     @app.errorhandler(Exception)
@@ -112,7 +121,7 @@ if __name__ == "__main__":
     app = create_app()
 
     print("=" * 60)
-    print("ATG_DIGICAM WebServer STARTED")
+    print(f"{APP_DISPLAY_NAME} STARTED")
     print(f"Local:  http://127.0.0.1:{port}")
     print(f"LAN:    http://<IP_MAY_CHAY_WEBSERVER>:{port}")
     print("=" * 60)

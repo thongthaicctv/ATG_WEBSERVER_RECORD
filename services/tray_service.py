@@ -25,7 +25,10 @@ def kill_win_timer(hwnd, timer_id):
     user32.KillTimer(int(hwnd), int(timer_id))
 
 
-APP_NAME = "ATG_DIGICAM WebServer"
+# WEB-REL-1A: ten HIEN THI (window title/tooltip/balloon).
+# Tray class name ATG_WEBSERVER_TRAY giu nguyen.
+from core.version import APP_DISPLAY_NAME
+APP_NAME = APP_DISPLAY_NAME
 MENU_OPEN_ID = 1001
 MENU_EXIT_ID = 1002
 _exit_requested = threading.Event()

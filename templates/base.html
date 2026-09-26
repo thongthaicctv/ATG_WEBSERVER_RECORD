@@ -2,7 +2,7 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <title>ATG_DIGICAM WebServer</title>
+    <title>{{ app_display_name|default('ATG_DIGICAM WebServer v1.0.0') }}</title>
     <link rel="stylesheet" href="/static/css/style.css">
 </head>
 <body>
@@ -11,6 +11,7 @@
     <aside class="sidebar">
         <div class="brand">
             ATG_DIGICAM WebServer
+            <div style="font-size: 11px; font-weight: normal; opacity: 0.7; letter-spacing: 0; margin-top: 4px;">v{{ app_version|default('1.0.0') }}</div>
         </div>
 
         {% if current_user %}
