@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Cài đặt Database - {{ app_display_name|default('ATG_DIGICAM WebServer') }}</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body class="login-page">
+    <main class="login-panel" style="max-width: 520px; width: 100%;">
+        <h1>Cài đặt Database</h1>
+        <div class="hint" style="margin-bottom: 12px;">
+            {{ app_display_name|default('ATG_DIGICAM WebServer') }} chưa kết nối được MySQL/MariaDB.
+        </div>
+
+        {% if status_message %}
+        <div class="alert-error">{{ status_message }}</div>
+        {% endif %}
+
+        {% if can_edit %}
+        <form class="login-form" data-db-form
+              data-test-url="{{ url_for('setup.test_connection') }}"
+              data-save-url="{{ url_for('setup.save') }}">
+            {% include "setup/_db_fields.html" %}
+        </form>
+        <script src="/static/js/db_setup.js"></script>
+        {% else %}
+        <div class="alert-error">
+            Chỉ cấu hình Database được từ chính máy chạy WebServer hoặc tài khoản root.
+        </div>
+        <div class="hint">
+            Trên máy chạy WebServer, mở: <b>{{ local_url }}</b><br>
+            Hoặc liên hệ quản trị viên.
+        </div>
+        {% endif %}
+    </main>
+</body>
+</html>

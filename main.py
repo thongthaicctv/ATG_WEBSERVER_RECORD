@@ -11,6 +11,7 @@ from werkzeug.exceptions import HTTPException
 
 from core.config_manager import load_config
 from core.auth_manager import ensure_default_users, register_auth_guards
+from core.db_setup_guard import handle_db_connection_error, register_db_setup_gate
 from core.path_utils import get_log_path
 from core.version import APP_DISPLAY_NAME, APP_VERSION
 
@@ -22,6 +23,7 @@ from routes.video_wholesale_routes import video_wholesale_bp
 from routes.shipping_routes import shipping_bp
 from routes.report_routes import report_bp
 from routes.settings_routes import settings_bp
+from routes.setup_routes import setup_bp
 
 from routes.order_routes import order_bp
 from services.single_instance import ensure_single_instance
@@ -79,12 +81,15 @@ def create_app():
     app.register_blueprint(shipping_bp, url_prefix="/shipping")
     app.register_blueprint(report_bp, url_prefix="/reports")
     app.register_blueprint(settings_bp, url_prefix="/settings")
+    app.register_blueprint(setup_bp, url_prefix="/setup")
 
     try:
         ensure_default_users()
     except Exception as e:
         print(f"AUTH INIT WARNING: {e}")
 
+    # WEB-DB-FIRST-RUN-SETUP: gate DB phai chay truoc auth guard.
+    register_db_setup_gate(app)
     register_auth_guards(app)
 
     # WEB-REL-1A: chi inject version de hien thi tren template.
@@ -100,6 +105,10 @@ def create_app():
     def handle_unhandled_exception(exc):
         if isinstance(exc, HTTPException):
             return exc
+
+        db_response = handle_db_connection_error(exc)
+        if db_response is not None:
+            return db_response
 
         app.logger.exception("Unhandled server error", exc_info=exc)
         return f"Lỗi server: {exc}", 500

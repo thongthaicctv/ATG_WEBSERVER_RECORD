@@ -56,11 +56,11 @@ if errorlevel 1 (
 
 echo.
 echo Build thanh cong: dist\ATG_WEBSERVER.exe
-copy /Y webserver_config.json dist\webserver_config.json >nul
-if errorlevel 1 (
-    echo Canh bao: khong copy duoc webserver_config.json vao dist.
-) else (
-    echo Da copy webserver_config.json vao dist.
+REM WEB-REL-1.0.1: KHONG copy webserver_config.json vao dist.
+REM Config ma hoa DPAPI gan voi may/user hien tai; may moi khoi tao qua /setup/database.
+if exist dist\webserver_config.json (
+    echo CANH BAO: dist\webserver_config.json con sot tu ban build cu ^(config DPAPI cua may nay^).
+    echo           Hay XOA file nay truoc khi dong goi gui may moi.
 )
 copy /Y HUONG_DAN_CAI_DAT_CHAY_AN.txt dist\HUONG_DAN_CAI_DAT_CHAY_AN.txt >nul
 if errorlevel 1 (
@@ -85,5 +85,5 @@ if defined FFMPEG_SRC (
 ) else (
     echo Canh bao: khong tim thay ffmpeg.exe. File MKV/TS co the khong xem truc tiep duoc tren trinh duyet.
 )
-echo Dat webserver_config.json canh file exe neu muon dung cau hinh rieng ben ngoai.
+echo May moi: chay ATG_WEBSERVER.exe, mo http://127.0.0.1:^<port^>/setup/database tren chinh may do de cau hinh Database.
 pause

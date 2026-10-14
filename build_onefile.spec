@@ -15,7 +15,8 @@ datas = [
     (str(project_dir / "icon.ico"), "."),
     (str(project_dir / "logo.png"), "."),
     (str(project_dir / "banner.png"), "."),
-    (str(project_dir / "webserver_config.json"), "."),
+    # WEB-REL-1.0.1: KHONG dong goi webserver_config.json (config DPAPI cua may build).
+    # May moi tu khoi tao cau hinh qua /setup/database.
 ]
 
 hiddenimports = [

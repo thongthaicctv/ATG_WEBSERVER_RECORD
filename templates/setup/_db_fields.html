@@ -1,0 +1,29 @@
+{# WEB-DB-FIRST-RUN-SETUP: cac o nhap DB dung chung. Khong render password da luu. #}
+<input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+
+<label>Host</label>
+<input type="text" name="db_host" value="{{ db.host }}" placeholder="Ví dụ: 127.0.0.1 hoặc 192.168.1.10" required autocomplete="off">
+
+<label>Port</label>
+<input type="number" name="db_port" value="{{ db.port }}" min="1" max="65535" required>
+
+<label>Database</label>
+<input type="text" name="db_name" value="{{ db.database }}" placeholder="Ví dụ: atg_order_system" required autocomplete="off">
+
+<label>User</label>
+<input type="text" name="db_user" value="{{ db.user }}" required autocomplete="off">
+
+<label>Password</label>
+<input type="password" name="db_password" value="" autocomplete="new-password"
+       placeholder="{% if db.has_password %}Đã lưu mật khẩu — để trống để giữ nguyên{% else %}Nhập mật khẩu MySQL{% endif %}">
+<div class="hint">
+    Mật khẩu được lưu mã hóa trong webserver_config.json. Để trống = giữ mật khẩu đã lưu (chỉ khi Host/Port/User không đổi).
+</div>
+
+<div data-db-result hidden style="margin-top: 12px;"></div>
+
+<div class="form-actions">
+    <button type="button" class="btn-gray" data-db-test>Test kết nối</button>
+    <button type="submit" data-db-save>Lưu Database</button>
+</div>
+<div class="hint">Test kết nối chỉ chạy <code>SELECT 1</code>. Nút Lưu sẽ test lại và chỉ lưu khi kết nối thành công.</div>

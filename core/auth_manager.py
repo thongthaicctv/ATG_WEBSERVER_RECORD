@@ -20,6 +20,10 @@ PUBLIC_ENDPOINTS = {
     "auth.logout",
     "video.public_download",
     "static",
+    # WEB-DB-FIRST-RUN-SETUP: route tu kiem soat quyen (root hoac localhost khi DB chua san sang).
+    "setup.database",
+    "setup.test_connection",
+    "setup.save",
 }
 
 ROLE_PERMISSIONS = {

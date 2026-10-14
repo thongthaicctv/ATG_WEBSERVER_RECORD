@@ -7,24 +7,18 @@
 <div class="alert-success">{{ message }}</div>
 {% endif %}
 
+<form class="settings-form" data-db-form style="margin-bottom: 18px;"
+      data-test-url="{{ url_for('settings.test_database_form') }}"
+      data-save-url="{{ url_for('settings.save_database_form') }}">
+
+    <h2>DATABASE (MySQL/MariaDB)</h2>
+
+    {% include "setup/_db_fields.html" %}
+
+</form>
+<script src="/static/js/db_setup.js"></script>
+
 <form method="post" class="settings-form">
-
-    <h2>Database MySQL/MariaDB</h2>
-
-    <label>DB Host</label>
-    <input type="text" name="db_host" value="{{ cfg.database.host }}">
-
-    <label>DB Port</label>
-    <input type="number" name="db_port" value="{{ cfg.database.port }}">
-
-    <label>DB User</label>
-    <input type="text" name="db_user" value="{{ cfg.database.user }}">
-
-    <label>DB Password</label>
-    <input type="password" name="db_password" value="{{ cfg.database.password }}">
-
-    <label>Database Name</label>
-    <input type="text" name="db_name" value="{{ cfg.database.database }}">
 
     <h2>WebServer</h2>
 

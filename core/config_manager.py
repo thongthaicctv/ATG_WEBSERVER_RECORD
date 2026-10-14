@@ -25,8 +25,9 @@ DEFAULT_CONFIG = {
     "database": {
         "host": "127.0.0.1",
         "port": 3306,
-        "user": "atg_app",
-        "password": "atg_password",
+        # WEB-DB-FIRST-RUN-SETUP: khong hardcode tai khoan MySQL; nhap qua trang Setup/Cai dat.
+        "user": "",
+        "password": "",
         "database": "atg_order_system",
         "charset": "utf8mb4"
     },

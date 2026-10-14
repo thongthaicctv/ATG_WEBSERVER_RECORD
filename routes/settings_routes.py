@@ -1,10 +1,18 @@
 # routes/settings_routes.py
 # -*- coding: utf-8 -*-
 
-from flask import Blueprint, render_template, request, redirect, url_for
+from flask import Blueprint, jsonify, render_template, request, redirect, url_for
 
 from core.config_manager import load_config, save_config
-from db.mysql_client import get_connection
+from services.db_setup_service import (
+    check_csrf_token,
+    db_config_for_display,
+    get_csrf_token,
+    parse_db_form,
+    run_db_test,
+    save_db_config,
+)
+from db.mysql_client import test_db_connection
 from services.windows_startup import (
     enable_startup,
     disable_startup,
@@ -24,11 +32,8 @@ def database_settings():
     message = ""
 
     if request.method == "POST":
-        cfg["database"]["host"] = request.form.get("db_host", "127.0.0.1").strip()
-        cfg["database"]["port"] = int(request.form.get("db_port", "3306").strip())
-        cfg["database"]["user"] = request.form.get("db_user", "atg_app").strip()
-        cfg["database"]["password"] = request.form.get("db_password", "").strip()
-        cfg["database"]["database"] = request.form.get("db_name", "atg_order_system").strip()
+        # WEB-DB-FIRST-RUN-SETUP: DB duoc luu rieng qua nut "Luu Database"
+        # (/settings/database/save-db) sau khi test SELECT 1 PASS.
 
         cfg["app"]["host"] = request.form.get("web_host", "0.0.0.0").strip()
         cfg["app"]["port"] = int(request.form.get("web_port", "8088").strip())
@@ -54,6 +59,8 @@ def database_settings():
     return render_template(
         "settings/database.html",
         cfg=cfg,
+        db=db_config_for_display(cfg.get("database", {})),
+        csrf_token=get_csrf_token(),
         message=message,
     )
 
@@ -81,12 +88,34 @@ def _dedupe_strings(values):
 
 @settings_bp.route("/test-db")
 def test_database():
-    try:
-        conn = get_connection()
-        conn.close()
-        return "Kết nối database thành công."
-    except Exception as e:
-        return f"Kết nối database lỗi: {e}", 500
+    ok, message = test_db_connection(load_config().get("database", {}))
+    if ok:
+        return message
+    return f"Kết nối database lỗi: {message}", 500
+
+
+@settings_bp.route("/database/test-db", methods=["POST"])
+def test_database_form():
+    if not check_csrf_token():
+        return jsonify({"ok": False, "message": "Phiên làm việc hết hạn. Hãy tải lại trang."}), 400
+
+    db_cfg, errors = parse_db_form(request.form, load_config().get("database", {}))
+    ok, message = run_db_test(db_cfg, errors)
+    return jsonify({"ok": ok, "message": message})
+
+
+@settings_bp.route("/database/save-db", methods=["POST"])
+def save_database_form():
+    if not check_csrf_token():
+        return jsonify({"ok": False, "message": "Phiên làm việc hết hạn. Hãy tải lại trang."}), 400
+
+    db_cfg, errors = parse_db_form(request.form, load_config().get("database", {}))
+    ok, message = run_db_test(db_cfg, errors)
+    if not ok:
+        return jsonify({"ok": False, "message": f"Chưa lưu. {message}"})
+
+    saved, save_message = save_db_config(db_cfg)
+    return jsonify({"ok": saved, "message": save_message, "password_saved": saved})
 
 
 @settings_bp.route("/startup", methods=["GET", "POST"])
